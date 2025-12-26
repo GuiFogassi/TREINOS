@@ -1310,9 +1310,10 @@ function App() {
                                 () => {
                                   const novoHistorico = historico.filter((_, i) => i !== historico.length - 1 - idx)
                                   salvarNoLocalStorage('historico_treinos', novoHistorico)
-                                  setRefreshStats(prev => prev + 1)
                                   mostrarInfo('Treino excluído do histórico!')
-                                  setMostrarHistoricoCompleto(false)
+                                  setTimeout(() => {
+                                    setMostrarHistoricoCompleto(false)
+                                  }, 500)
                                 }
                               )
                             }}
