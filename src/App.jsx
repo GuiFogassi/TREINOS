@@ -46,6 +46,7 @@ function App() {
   const [exercicioEditando, setExercicioEditando] = useState(null)
   const [exercicioEditado, setExercicioEditado] = useState({ nome: '', series: 4, repeticoes: '12', link: '', metodo: '', descanso: 120 })
   const [periodoStats, setPeriodoStats] = useState('semana')
+  const [mostrarHistoricoCompleto, setMostrarHistoricoCompleto] = useState(false)
 
   const [novoExercicio, setNovoExercicio] = useState({ nome: '', series: 4, repeticoes: '12', link: '', metodo: '', descanso: 120 })
 
@@ -1211,9 +1212,124 @@ function App() {
                   )}
                 </div>
               </div>
+
+              <div className="bg-[#1a1a1a] border border-white/5 rounded-2xl p-5">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-white font-semibold">Últimos Treinos</h3>
+                  <button
+                    onClick={() => setMostrarHistoricoCompleto(true)}
+                    className="text-blue-400 text-sm hover:text-blue-300"
+                  >
+                    Ver todos
+                  </button>
+                </div>
+                <div className="space-y-2">
+                  {(() => {
+                    const historico = carregarDoLocalStorage('historico_treinos', [])
+                    const ultimosTreinos = Array.isArray(historico) 
+                      ? historico.slice(-3).reverse() 
+                      : []
+                    
+                    if (ultimosTreinos.length === 0) {
+                      return <p className="text-white/40 text-sm">Nenhum treino registrado</p>
+                    }
+                    
+                    return ultimosTreinos.map((treino, idx) => {
+                      const data = new Date(treino.data)
+                      const dataFormatada = data.toLocaleDateString('pt-BR', { 
+                        day: '2-digit', 
+                        month: '2-digit', 
+                        year: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                      })
+                      
+                      return (
+                        <div key={idx} className="flex justify-between items-center py-2 border-b border-white/5 last:border-0">
+                          <div className="flex-1 min-w-0">
+                            <p className="text-white/80 text-sm truncate">{treino.nomeTreino || 'Treino'}</p>
+                            <p className="text-white/40 text-xs">{dataFormatada}</p>
+                          </div>
+                          <span className="text-white/60 text-sm ml-2">{formatarTempo(treino.tempoTotal || 0)}</span>
+                        </div>
+                      )
+                    })
+                  })()}
+                </div>
+              </div>
             </div>
           </div>
         </div>
+
+        {mostrarHistoricoCompleto && (
+          <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+            <div className="bg-[#1a1a1a] border border-white/10 rounded-2xl p-6 max-w-md w-full max-h-[90vh] flex flex-col">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-xl font-semibold text-white">Histórico Completo</h2>
+                <button
+                  onClick={() => setMostrarHistoricoCompleto(false)}
+                  className="text-white/60 hover:text-white"
+                  aria-label="Fechar histórico"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+              <div className="flex-1 overflow-y-auto space-y-2">
+                {(() => {
+                  const historico = carregarDoLocalStorage('historico_treinos', [])
+                  const historicoOrdenado = Array.isArray(historico) 
+                    ? [...historico].reverse() 
+                    : []
+                  
+                  if (historicoOrdenado.length === 0) {
+                    return <p className="text-white/40 text-sm text-center py-8">Nenhum treino registrado</p>
+                  }
+                  
+                  return historicoOrdenado.map((treino, idx) => {
+                    const data = new Date(treino.data)
+                    const dataFormatada = data.toLocaleDateString('pt-BR', { 
+                      day: '2-digit', 
+                      month: '2-digit', 
+                      year: 'numeric',
+                      hour: '2-digit',
+                      minute: '2-digit'
+                    })
+                    
+                    return (
+                      <div key={idx} className="bg-[#0a0a0a] border border-white/5 rounded-xl p-4">
+                        <div className="flex items-start justify-between gap-3">
+                          <div className="flex-1 min-w-0">
+                            <p className="text-white font-medium text-sm truncate">{treino.nomeTreino || 'Treino'}</p>
+                            <p className="text-white/40 text-xs mt-1">{dataFormatada}</p>
+                            <p className="text-white/60 text-xs mt-1">Tempo: {formatarTempo(treino.tempoTotal || 0)}</p>
+                          </div>
+                          <button
+                            onClick={() => {
+                              mostrarConfirmacao(
+                                'Tem certeza que deseja excluir este treino do histórico?',
+                                () => {
+                                  const novoHistorico = historico.filter((_, i) => i !== historico.length - 1 - idx)
+                                  salvarNoLocalStorage('historico_treinos', novoHistorico)
+                                  setRefreshStats(prev => prev + 1)
+                                  mostrarInfo('Treino excluído do histórico!')
+                                  setMostrarHistoricoCompleto(false)
+                                }
+                              )
+                            }}
+                            className="text-red-400/60 hover:text-red-400 p-1.5 rounded transition-colors flex-shrink-0"
+                            aria-label="Excluir treino"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </div>
+                    )
+                  })
+                })()}
+              </div>
+            </div>
+          </div>
+        )}
 
         <Footer />
 

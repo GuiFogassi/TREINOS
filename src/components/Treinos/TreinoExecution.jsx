@@ -246,10 +246,24 @@ export const TreinoExecution = ({
     setMostrarSelecaoInicial(false)
   }
 
+  const [mostrarModalVoltar, setMostrarModalVoltar] = useState(false)
+
   const handleVoltar = () => {
+    setMostrarModalVoltar(true)
+  }
+
+  const handlePausarEVoltar = () => {
     if (!isPaused) {
       pausarTreino()
     }
+    setMostrarModalVoltar(false)
+    onVoltar()
+  }
+
+  const handleEncerrarTreino = () => {
+    limparTimer()
+    limparProgresso()
+    setMostrarModalVoltar(false)
     onVoltar()
   }
 
@@ -259,6 +273,35 @@ export const TreinoExecution = ({
 
   return (
     <div className="min-h-screen bg-[#0a0a0a] pb-32">
+      {mostrarModalVoltar && (
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-[#1a1a1a] border border-white/10 rounded-2xl p-6 max-w-sm w-full">
+            <h2 className="text-xl font-semibold text-white mb-4 text-center">
+              O que deseja fazer?
+            </h2>
+            <div className="space-y-3">
+              <button
+                onClick={handlePausarEVoltar}
+                className="w-full bg-blue-500/20 hover:bg-blue-500/30 text-blue-400 py-3 rounded-xl font-medium transition-all active:scale-95"
+              >
+                Pausar e Voltar
+              </button>
+              <button
+                onClick={handleEncerrarTreino}
+                className="w-full bg-red-500/20 hover:bg-red-500/30 text-red-400 py-3 rounded-xl font-medium transition-all active:scale-95"
+              >
+                Encerrar Treino
+              </button>
+              <button
+                onClick={() => setMostrarModalVoltar(false)}
+                className="w-full bg-white/10 hover:bg-white/20 text-white py-3 rounded-xl font-medium transition-all active:scale-95"
+              >
+                Cancelar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
       {mostrarSelecaoInicial && (
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
           <div className="bg-[#1a1a1a] border border-white/10 rounded-2xl p-6 max-w-sm w-full">
