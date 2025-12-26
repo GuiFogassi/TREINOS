@@ -631,13 +631,8 @@ function App() {
 
 
   useEffect(() => {
-    if (modoEdicao && treinoEditando === 'CARDIO' && !cardioEditando) {
-      const cardio = treinos['CARDIO']
+    if (modoEdicao && treinoEditando === 'CARDIO' && !cardioEditando && treinos['CARDIO']) {
       setCardioEditando('CARDIO')
-      setCardioForm({
-        tipo: cardio?.tipoCardio || '',
-        tempo: cardio?.tempoCardio || 0
-      })
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [modoEdicao, treinoEditando])
@@ -652,31 +647,34 @@ function App() {
 
       return (
         <>
-          <ModalCardio
-            treinoCardio={treinos['CARDIO']}
-            onSalvar={(dados) => {
-              const novosTreinos = {
-                ...treinos,
-                CARDIO: {
-                  ...treinos['CARDIO'],
-                  ...dados
+          {cardioEditando && (
+            <ModalCardio
+              treinoCardio={treinos['CARDIO']}
+              mostrar={!!cardioEditando}
+              onSalvar={(dados) => {
+                const novosTreinos = {
+                  ...treinos,
+                  CARDIO: {
+                    ...treinos['CARDIO'],
+                    ...dados
+                  }
                 }
-              }
-              salvarTreinos(novosTreinos)
-              setCardioEditando(null)
-              setModoEdicao(false)
-              setTreinoEditando(null)
-              mostrarInfo('Cardio salvo com sucesso!')
-            }}
-            onCancel={() => {
-              setCardioEditando(null)
-              setCardioForm({ tipo: '', tempo: 0 })
-              setModoEdicao(false)
-              setTreinoEditando(null)
-            }}
-            modoEdicao={true}
-            onMostrarInfo={mostrarInfo}
-          />
+                salvarTreinos(novosTreinos)
+                setCardioEditando(null)
+                setModoEdicao(false)
+                setTreinoEditando(null)
+                mostrarInfo('Cardio salvo com sucesso!')
+              }}
+              onCancel={() => {
+                setCardioEditando(null)
+                setCardioForm({ tipo: '', tempo: 0 })
+                setModoEdicao(false)
+                setTreinoEditando(null)
+              }}
+              modoEdicao={true}
+              onMostrarInfo={mostrarInfo}
+            />
+          )}
           <ModalEscolherTipoTreino
             mostrar={mostrarModalCardio}
             onCreateTreinoNormal={criarTreinoNormal}
@@ -1098,31 +1096,38 @@ function App() {
           onCreateCardio={criarCardio}
           onCancel={() => setMostrarModalCardio(false)}
         />
-        <ModalCardio
-          treinoCardio={treinos['CARDIO']}
-          onSalvar={(dados) => {
-            const novosTreinos = {
-              ...treinos,
-              CARDIO: {
-                ...treinos['CARDIO'],
-                ...dados
+        {cardioEditando && (
+          <ModalCardio
+            treinoCardio={treinos['CARDIO']}
+            mostrar={!!cardioEditando}
+            onSalvar={(dados) => {
+              const novosTreinos = {
+                ...treinos,
+                CARDIO: {
+                  ...treinos['CARDIO'],
+                  ...dados
+                }
               }
-            }
-            salvarTreinos(novosTreinos)
-            setCardioEditando(null)
-            if (modoEdicao && treinoEditando === 'CARDIO') {
-              setModoEdicao(false)
-              setTreinoEditando(null)
-            }
-            mostrarInfo('Cardio salvo com sucesso!')
-          }}
-          onCancel={() => {
-            setCardioEditando(null)
-            setCardioForm({ tipo: '', tempo: 0 })
-          }}
-          modoEdicao={modoEdicao && treinoEditando === 'CARDIO'}
-          onMostrarInfo={mostrarInfo}
-        />
+              salvarTreinos(novosTreinos)
+              setCardioEditando(null)
+              if (modoEdicao && treinoEditando === 'CARDIO') {
+                setModoEdicao(false)
+                setTreinoEditando(null)
+              }
+              mostrarInfo('Cardio salvo com sucesso!')
+            }}
+            onCancel={() => {
+              setCardioEditando(null)
+              setCardioForm({ tipo: '', tempo: 0 })
+              if (modoEdicao && treinoEditando === 'CARDIO') {
+                setModoEdicao(false)
+                setTreinoEditando(null)
+              }
+            }}
+            modoEdicao={modoEdicao && treinoEditando === 'CARDIO'}
+            onMostrarInfo={mostrarInfo}
+          />
+        )}
       </>
     )
   }
@@ -1222,31 +1227,38 @@ function App() {
           onCreateCardio={criarCardio}
           onCancel={() => setMostrarModalCardio(false)}
         />
-        <ModalCardio
-          treinoCardio={treinos['CARDIO']}
-          onSalvar={(dados) => {
-            const novosTreinos = {
-              ...treinos,
-              CARDIO: {
-                ...treinos['CARDIO'],
-                ...dados
+        {cardioEditando && (
+          <ModalCardio
+            treinoCardio={treinos['CARDIO']}
+            mostrar={!!cardioEditando}
+            onSalvar={(dados) => {
+              const novosTreinos = {
+                ...treinos,
+                CARDIO: {
+                  ...treinos['CARDIO'],
+                  ...dados
+                }
               }
-            }
-            salvarTreinos(novosTreinos)
-            setCardioEditando(null)
-            if (modoEdicao && treinoEditando === 'CARDIO') {
-              setModoEdicao(false)
-              setTreinoEditando(null)
-            }
-            mostrarInfo('Cardio salvo com sucesso!')
-          }}
-          onCancel={() => {
-            setCardioEditando(null)
-            setCardioForm({ tipo: '', tempo: 0 })
-          }}
-          modoEdicao={modoEdicao && treinoEditando === 'CARDIO'}
-          onMostrarInfo={mostrarInfo}
-        />
+              salvarTreinos(novosTreinos)
+              setCardioEditando(null)
+              if (modoEdicao && treinoEditando === 'CARDIO') {
+                setModoEdicao(false)
+                setTreinoEditando(null)
+              }
+              mostrarInfo('Cardio salvo com sucesso!')
+            }}
+            onCancel={() => {
+              setCardioEditando(null)
+              setCardioForm({ tipo: '', tempo: 0 })
+              if (modoEdicao && treinoEditando === 'CARDIO') {
+                setModoEdicao(false)
+                setTreinoEditando(null)
+              }
+            }}
+            modoEdicao={modoEdicao && treinoEditando === 'CARDIO'}
+            onMostrarInfo={mostrarInfo}
+          />
+        )}
       </>
     )
   }
@@ -1467,31 +1479,38 @@ function App() {
           onCreateCardio={criarCardio}
           onCancel={() => setMostrarModalCardio(false)}
         />
-        <ModalCardio
-          treinoCardio={treinos['CARDIO']}
-          onSalvar={(dados) => {
-            const novosTreinos = {
-              ...treinos,
-              CARDIO: {
-                ...treinos['CARDIO'],
-                ...dados
+        {cardioEditando && (
+          <ModalCardio
+            treinoCardio={treinos['CARDIO']}
+            mostrar={!!cardioEditando}
+            onSalvar={(dados) => {
+              const novosTreinos = {
+                ...treinos,
+                CARDIO: {
+                  ...treinos['CARDIO'],
+                  ...dados
+                }
               }
-            }
-            salvarTreinos(novosTreinos)
-            setCardioEditando(null)
-            if (modoEdicao && treinoEditando === 'CARDIO') {
-              setModoEdicao(false)
-              setTreinoEditando(null)
-            }
-            mostrarInfo('Cardio salvo com sucesso!')
-          }}
-          onCancel={() => {
-            setCardioEditando(null)
-            setCardioForm({ tipo: '', tempo: 0 })
-          }}
-          modoEdicao={modoEdicao && treinoEditando === 'CARDIO'}
-          onMostrarInfo={mostrarInfo}
-        />
+              salvarTreinos(novosTreinos)
+              setCardioEditando(null)
+              if (modoEdicao && treinoEditando === 'CARDIO') {
+                setModoEdicao(false)
+                setTreinoEditando(null)
+              }
+              mostrarInfo('Cardio salvo com sucesso!')
+            }}
+            onCancel={() => {
+              setCardioEditando(null)
+              setCardioForm({ tipo: '', tempo: 0 })
+              if (modoEdicao && treinoEditando === 'CARDIO') {
+                setModoEdicao(false)
+                setTreinoEditando(null)
+              }
+            }}
+            modoEdicao={modoEdicao && treinoEditando === 'CARDIO'}
+            onMostrarInfo={mostrarInfo}
+          />
+        )}
       </>
     )
   }
@@ -1529,6 +1548,7 @@ function App() {
       {cardioEditando && (
         <ModalCardio
           treinoCardio={treinos['CARDIO']}
+          mostrar={!!cardioEditando}
           onSalvar={(dados) => {
             const novosTreinos = {
               ...treinos,
@@ -1548,6 +1568,10 @@ function App() {
           onCancel={() => {
             setCardioEditando(null)
             setCardioForm({ tipo: '', tempo: 0 })
+            if (modoEdicao && treinoEditando === 'CARDIO') {
+              setModoEdicao(false)
+              setTreinoEditando(null)
+            }
           }}
           modoEdicao={modoEdicao && treinoEditando === 'CARDIO'}
           onMostrarInfo={mostrarInfo}

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { formatarTempo } from '../../utils/time'
 
-export const ModalCardio = ({ treinoCardio, onSalvar, onCancel, modoEdicao }) => {
+export const ModalCardio = ({ treinoCardio, onSalvar, onCancel, modoEdicao, onMostrarInfo, mostrar }) => {
   const [localTipo, setLocalTipo] = useState('')
   const [localTempo, setLocalTempo] = useState(0)
 
@@ -9,10 +9,14 @@ export const ModalCardio = ({ treinoCardio, onSalvar, onCancel, modoEdicao }) =>
     if (treinoCardio) {
       setLocalTipo(treinoCardio.tipoCardio || '')
       setLocalTempo(treinoCardio.tempoCardio || 0)
+    } else if (modoEdicao) {
+      setLocalTipo('')
+      setLocalTempo(0)
     }
-  }, [treinoCardio])
+  }, [treinoCardio, modoEdicao])
 
-  if (!treinoCardio && !modoEdicao) return null
+  if (!mostrar && !modoEdicao) return null
+  if (!mostrar && modoEdicao && !treinoCardio) return null
 
   const handleSalvar = () => {
     if (!localTipo.trim()) {
@@ -28,10 +32,18 @@ export const ModalCardio = ({ treinoCardio, onSalvar, onCancel, modoEdicao }) =>
       return
     }
 
-    onSalvar({
-      tipoCardio: localTipo.trim(),
-      tempoCardio: localTempo
-    })
+    if (onSalvar) {
+      onSalvar({
+        tipoCardio: localTipo.trim(),
+        tempoCardio: localTempo
+      })
+    }
+  }
+
+  const handleCancel = () => {
+    if (onCancel) {
+      onCancel()
+    }
   }
 
   const horas = Math.floor(localTempo / 3600)
@@ -100,7 +112,7 @@ export const ModalCardio = ({ treinoCardio, onSalvar, onCancel, modoEdicao }) =>
               Salvar
             </button>
             <button
-              onClick={onCancel}
+              onClick={handleCancel}
               className="flex-1 bg-white/10 hover:bg-white/20 text-white py-3 rounded-xl font-medium transition-all active:scale-95"
             >
               Cancelar
