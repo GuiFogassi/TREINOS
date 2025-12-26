@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
-import { Play, RotateCcw, CheckCircle, Clock, SkipForward, ArrowLeft, Plus, Trash2, X, Edit2, Calendar, ExternalLink, BarChart3, TrendingUp, Download, Upload, Mail, MessageCircle, Github, Linkedin } from 'lucide-react'
+import { RotateCcw, ArrowLeft, Plus, Trash2, X, Edit2, Download, Upload } from 'lucide-react'
 import { Header } from './components/Header'
 import { Footer } from './components/Footer'
 import { ModalConfirmacao } from './components/Modals/ModalConfirmacao'
@@ -13,7 +13,7 @@ import { METODOS_TREINO } from './constants/metodos'
 import { salvarNoLocalStorage, carregarDoLocalStorage } from './utils/storage'
 import { formatarTempo, formatarTempoDescanso, obterSemanaAtual } from './utils/time'
 import { validarTreino } from './utils/validation'
-import { processarTreinosImportados, converterDescansoParaSegundos, parsearSeriesReps } from './utils/importExport'
+import { processarTreinosImportados } from './utils/importExport'
 import { calcularEstatisticas } from './utils/estatisticas'
 
 
@@ -327,7 +327,6 @@ function App() {
 
 
 
-  // Importar dados (restore) - melhorado para aceitar diferentes formatos
   const importarDados = () => {
     const input = document.createElement('input')
     input.type = 'file'
@@ -392,14 +391,9 @@ function App() {
   }
 
   const voltarInicio = () => {
-    mostrarConfirmacao(
-      'Deseja voltar ao início? O progresso será mantido.',
-      () => {
-        setTreinoSelecionado(null)
-        setModoEdicao(false)
-        setTreinoEditando(null)
-      }
-    )
+    setTreinoSelecionado(null)
+    setModoEdicao(false)
+    setTreinoEditando(null)
   }
 
   const criarNovoTreino = () => {
@@ -568,7 +562,6 @@ function App() {
     setExercicioEditado({ nome: '', series: 4, repeticoes: '12', link: '', metodo: '', descanso: 120 })
   }
 
-  // Salvar planejamento semanal
   const salvarPlanejamento = () => {
     if (salvarNoLocalStorage('planejamento_semanal', planejamentoSemanal)) {
       mostrarInfo('Planejamento salvo com sucesso!')
@@ -635,8 +628,7 @@ function App() {
     if (modoEdicao && treinoEditando === 'CARDIO' && !cardioEditando && treinos['CARDIO']) {
       setCardioEditando('CARDIO')
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [modoEdicao, treinoEditando])
+  }, [modoEdicao, treinoEditando, treinos, cardioEditando])
 
   if (modoEdicao && treinoEditando) {
     const treino = treinos[treinoEditando]
@@ -956,7 +948,6 @@ function App() {
 
         <Footer />
 
-        {/* Modals */}
         <ModalConfirmacao />
         <ModalInfo />
         <ModalResumoSemanal />
@@ -964,7 +955,6 @@ function App() {
     )
   }
 
-  // Tela de planejamento semanal
   if (abaAtiva === 'planejamento' && !treinoSelecionado) {
     const diasSemana = [
       { key: 'segunda', label: 'Segunda-feira' },
@@ -1012,7 +1002,6 @@ function App() {
                     {dia.label}
                   </h3>
                   <div className="flex flex-wrap gap-2">
-                    {/* Cardio sempre aparece primeiro */}
                     {treinos['CARDIO'] && (
                       <button
                         onClick={() => atualizarTreinoDia(dia.key, 'CARDIO')}
@@ -1087,7 +1076,6 @@ function App() {
 
         <Footer />
 
-        {/* Modals */}
         <ModalConfirmacao modal={modalConfirmacao} onClose={() => setModalConfirmacao(null)} />
         <ModalInfo modal={modalInfo} onClose={() => setModalInfo(null)} />
         <ModalResumoSemanal modal={modalResumoSemanal} onClose={() => setModalResumoSemanal(null)} />
@@ -1133,7 +1121,6 @@ function App() {
     )
   }
 
-  // Tela de estatísticas
   if (abaAtiva === 'estatisticas' && !treinoSelecionado) {
     const stats = calcularEstatisticas(periodoStats)
 
@@ -1226,24 +1213,24 @@ function App() {
                 <div className="space-y-2">
                   {(() => {
                     const historico = carregarDoLocalStorage('historico_treinos', [])
-                    const ultimosTreinos = Array.isArray(historico) 
-                      ? historico.slice(-3).reverse() 
+                    const ultimosTreinos = Array.isArray(historico)
+                      ? historico.slice(-3).reverse()
                       : []
-                    
+
                     if (ultimosTreinos.length === 0) {
                       return <p className="text-white/40 text-sm">Nenhum treino registrado</p>
                     }
-                    
+
                     return ultimosTreinos.map((treino, idx) => {
                       const data = new Date(treino.data)
-                      const dataFormatada = data.toLocaleDateString('pt-BR', { 
-                        day: '2-digit', 
-                        month: '2-digit', 
+                      const dataFormatada = data.toLocaleDateString('pt-BR', {
+                        day: '2-digit',
+                        month: '2-digit',
                         year: 'numeric',
                         hour: '2-digit',
                         minute: '2-digit'
                       })
-                      
+
                       return (
                         <div key={idx} className="flex justify-between items-center py-2 border-b border-white/5 last:border-0">
                           <div className="flex-1 min-w-0">
@@ -1277,24 +1264,24 @@ function App() {
               <div className="flex-1 overflow-y-auto space-y-2">
                 {(() => {
                   const historico = carregarDoLocalStorage('historico_treinos', [])
-                  const historicoOrdenado = Array.isArray(historico) 
-                    ? [...historico].reverse() 
+                  const historicoOrdenado = Array.isArray(historico)
+                    ? [...historico].reverse()
                     : []
-                  
+
                   if (historicoOrdenado.length === 0) {
                     return <p className="text-white/40 text-sm text-center py-8">Nenhum treino registrado</p>
                   }
-                  
+
                   return historicoOrdenado.map((treino, idx) => {
                     const data = new Date(treino.data)
-                    const dataFormatada = data.toLocaleDateString('pt-BR', { 
-                      day: '2-digit', 
-                      month: '2-digit', 
+                    const dataFormatada = data.toLocaleDateString('pt-BR', {
+                      day: '2-digit',
+                      month: '2-digit',
                       year: 'numeric',
                       hour: '2-digit',
                       minute: '2-digit'
                     })
-                    
+
                     return (
                       <div key={idx} className="bg-[#0a0a0a] border border-white/5 rounded-xl p-4">
                         <div className="flex items-start justify-between gap-3">
@@ -1334,7 +1321,6 @@ function App() {
 
         <Footer />
 
-        {/* Modals */}
         <ModalConfirmacao modal={modalConfirmacao} onClose={() => setModalConfirmacao(null)} />
         <ModalInfo modal={modalInfo} onClose={() => setModalInfo(null)} />
         <ModalResumoSemanal modal={modalResumoSemanal} onClose={() => setModalResumoSemanal(null)} />
@@ -1380,7 +1366,6 @@ function App() {
     )
   }
 
-  // Tela de treinos (grid)
   if (abaAtiva === 'treinos' && !treinoSelecionado) {
     const diasSemana = [
       { key: 'segunda', label: 'Seg' },
@@ -1407,7 +1392,6 @@ function App() {
         />
         <div className="min-h-screen bg-[#0a0a0a] p-4 pb-8">
           <div className="max-w-md mx-auto">
-            {/* Planejamento Semanal Preview */}
             {temPlanejamento && (
               <div className="bg-[#1a1a1a] border border-white/5 rounded-2xl p-4 mb-4">
                 <div className="flex items-center justify-between mb-3">
@@ -1460,9 +1444,7 @@ function App() {
               </div>
             )}
 
-            {/* Grid de Treinos */}
             <div className="grid grid-cols-2 gap-3 mb-4">
-              {/* Cardio sempre aparece primeiro */}
               {treinos['CARDIO'] && (
                 <div
                   className="bg-[#1a1a1a] border border-blue-500/20 hover:border-blue-500/30 rounded-2xl p-4 transition-all group cursor-pointer"
@@ -1586,7 +1568,6 @@ function App() {
 
         <Footer />
 
-        {/* Modals */}
         <ModalConfirmacao modal={modalConfirmacao} onClose={() => setModalConfirmacao(null)} />
         <ModalInfo modal={modalInfo} onClose={() => setModalInfo(null)} />
         <ModalResumoSemanal modal={modalResumoSemanal} onClose={() => setModalResumoSemanal(null)} />
@@ -1632,7 +1613,6 @@ function App() {
     )
   }
 
-  // Tela de execução do treino
   if (treinoSelecionado) {
     const treino = treinos[treinoSelecionado]
     if (!treino) return null
@@ -1650,7 +1630,6 @@ function App() {
     )
   }
 
-  // Fallback - não deveria chegar aqui
   return (
     <>
       <ModalConfirmacao modal={modalConfirmacao} onClose={() => setModalConfirmacao(null)} />
