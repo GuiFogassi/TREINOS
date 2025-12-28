@@ -49,7 +49,7 @@ export const TreinoExecution = ({
   const [isPaused, setIsPaused] = useState(false)
   const intervaloDescansoRef = useRef(null)
 
-  const { tempoTotal, retomarTreino, limparTimer } = useTreinoTimer(treinoId, isPaused)
+  const { tempoTotal, limparTimer } = useTreinoTimer(treinoId, isPaused)
   const {
     progresso,
     exerciciosPulados,
@@ -98,7 +98,6 @@ export const TreinoExecution = ({
     setIsPaused(false)
     const chavePausado = `treino_${treinoId}_pausado`
     salvarNoLocalStorage(chavePausado, false)
-    retomarTreino()
   }
 
   const exercicioCompleto = (exercicioIndex) => {
