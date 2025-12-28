@@ -47,18 +47,15 @@ export const TreinoExecution = ({
   const [tempoDescanso, setTempoDescanso] = useState(0)
   const [serieEmDescanso, setSerieEmDescanso] = useState(null)
   const [isPaused, setIsPaused] = useState(false)
-  const [mostrarSelecaoInicial, setMostrarSelecaoInicial] = useState(false)
   const intervaloDescansoRef = useRef(null)
 
   const { tempoTotal, retomarTreino, limparTimer } = useTreinoTimer(treinoId, isPaused)
   const {
     progresso,
     exerciciosPulados,
-    exercicioInicial,
     marcarSerie,
     pularExercicio,
     desfazerPularExercicio,
-    definirExercicioInicial,
     limparProgresso
   } = useTreinoProgress(treinoId)
 
@@ -68,19 +65,7 @@ export const TreinoExecution = ({
     const chavePausado = `treino_${treinoId}_pausado`
     const pausado = carregarDoLocalStorage(chavePausado, false)
     setIsPaused(pausado)
-
-    const chaveInicial = `treino_${treinoId}_inicial`
-    const inicial = carregarDoLocalStorage(chaveInicial, null)
-    const chaveProgresso = `treino_${treinoId}_progresso`
-    const progressoSalvo = carregarDoLocalStorage(chaveProgresso, {})
-
-    if (inicial === null && treino && treino.exercicios && treino.exercicios.length > 0) {
-      const temProgressoSalvo = progressoSalvo && Object.keys(progressoSalvo).length > 0
-      if (!temProgressoSalvo) {
-        setMostrarSelecaoInicial(true)
-      }
-    }
-  }, [treinoId, treino])
+  }, [treinoId])
 
   useEffect(() => {
     if (tempoDescanso > 0) {
@@ -116,46 +101,64 @@ export const TreinoExecution = ({
     retomarTreino()
   }
 
+  const exercicioCompleto = (exercicioIndex) => {
+    if (exerciciosPulados.includes(exercicioIndex)) {
+      return true
+    }
+    const exercicio = treino.exercicios[exercicioIndex]
+    for (let i = 1; i <= exercicio.series; i++) {
+      if (!progresso[`${exercicioIndex}_${i}`]) {
+        return false
+      }
+    }
+    return true
+  }
+
+  const exercicioFoiIniciado = (exercicioIndex) => {
+    if (exerciciosPulados.includes(exercicioIndex)) {
+      return false
+    }
+    const exercicio = treino.exercicios[exercicioIndex]
+    return progresso[`${exercicioIndex}_1`] === true
+  }
+
+  const obterExercicioAtual = () => {
+    for (let i = 0; i < treino.exercicios.length; i++) {
+      if (!exerciciosPulados.includes(i) && exercicioFoiIniciado(i) && !exercicioCompleto(i)) {
+        return i
+      }
+    }
+    return null
+  }
+
   const podeMarcarSerie = (exercicioIndex, serieIndex) => {
     if (exerciciosPulados.includes(exercicioIndex)) {
       return false
     }
 
-    const exercicioInicialIndex = exercicioInicial !== null ? exercicioInicial : 0
+    const exercicioAtual = obterExercicioAtual()
 
-    if (exercicioIndex < exercicioInicialIndex) {
-      const todosAnterioresPulados = Array.from({ length: exercicioInicialIndex }, (_, i) => i)
-        .every(idx => exerciciosPulados.includes(idx))
-      if (!todosAnterioresPulados) {
-        return false
-      }
-    }
-
-    if (exercicioIndex === exercicioInicialIndex && serieIndex === 1) {
-      return true
-    }
-
-    if (serieIndex === 1 && exercicioIndex > exercicioInicialIndex) {
-      let exercicioAnteriorIndex = exercicioIndex - 1
-      while (exercicioAnteriorIndex >= exercicioInicialIndex && exerciciosPulados.includes(exercicioAnteriorIndex)) {
-        exercicioAnteriorIndex--
-      }
-
-      if (exercicioAnteriorIndex < exercicioInicialIndex) {
+    if (serieIndex === 1) {
+      if (exercicioAtual === null) {
         return true
       }
+      if (exercicioAtual === exercicioIndex) {
+        return true
+      }
+      return false
+    }
 
-      const exercicioAnterior = treino.exercicios[exercicioAnteriorIndex]
-      for (let i = 1; i <= exercicioAnterior.series; i++) {
-        if (!progresso[`${exercicioAnteriorIndex}_${i}`]) {
-          return false
-        }
-      }
-    } else {
-      const serieAnterior = `${exercicioIndex}_${serieIndex - 1}`
-      if (!progresso[serieAnterior]) {
-        return false
-      }
+    if (exercicioAtual === null) {
+      return false
+    }
+
+    if (exercicioIndex !== exercicioAtual) {
+      return false
+    }
+
+    const serieAnterior = `${exercicioIndex}_${serieIndex - 1}`
+    if (!progresso[serieAnterior]) {
+      return false
     }
 
     if (serieEmDescanso) {
@@ -208,19 +211,6 @@ export const TreinoExecution = ({
     }
   }
 
-  const exercicioCompleto = (exercicioIndex) => {
-    if (exerciciosPulados.includes(exercicioIndex)) {
-      return true
-    }
-    const exercicio = treino.exercicios[exercicioIndex]
-    for (let i = 1; i <= exercicio.series; i++) {
-      if (!progresso[`${exercicioIndex}_${i}`]) {
-        return false
-      }
-    }
-    return true
-  }
-
   const treinoCompleto = () => {
     if (treinoId === 'CARDIO') {
       return true
@@ -239,11 +229,6 @@ export const TreinoExecution = ({
       pulado: exerciciosPulados.includes(index)
     }))
     onFinalizar(tempoTotal, exerciciosPulados, exerciciosComStatus)
-  }
-
-  const handleSelecionarExercicioInicial = (exercicioIndex) => {
-    definirExercicioInicial(exercicioIndex)
-    setMostrarSelecaoInicial(false)
   }
 
   const [mostrarModalVoltar, setMostrarModalVoltar] = useState(false)
@@ -298,26 +283,6 @@ export const TreinoExecution = ({
               >
                 Cancelar
               </button>
-            </div>
-          </div>
-        </div>
-      )}
-      {mostrarSelecaoInicial && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-[#1a1a1a] border border-white/10 rounded-2xl p-6 max-w-sm w-full">
-            <h2 className="text-xl font-semibold text-white mb-4 text-center">
-              Começar por qual exercício?
-            </h2>
-            <div className="space-y-2 max-h-96 overflow-y-auto">
-              {treino.exercicios.map((exercicio, index) => (
-                <button
-                  key={index}
-                  onClick={() => handleSelecionarExercicioInicial(index)}
-                  className="w-full bg-white/10 hover:bg-white/20 text-white py-3 rounded-xl font-medium transition-all active:scale-95 text-left px-4"
-                >
-                  {exercicio.nome}
-                </button>
-              ))}
             </div>
           </div>
         </div>
