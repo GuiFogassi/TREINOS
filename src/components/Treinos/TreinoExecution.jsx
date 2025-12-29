@@ -233,15 +233,13 @@ export const TreinoExecution = ({
   const [mostrarModalVoltar, setMostrarModalVoltar] = useState(false)
 
   const handleVoltar = () => {
-    setMostrarModalVoltar(true)
-  }
-
-  const handlePausarEVoltar = () => {
-    if (!isPaused) {
-      pausarTreino()
+    // Se o treino está pausado, volta direto sem perguntar
+    if (isPaused) {
+      onVoltar()
+      return
     }
-    setMostrarModalVoltar(false)
-    onVoltar()
+    // Se o treino está rodando, pergunta o que fazer
+    setMostrarModalVoltar(true)
   }
 
   const handleEncerrarTreino = () => {
@@ -263,13 +261,10 @@ export const TreinoExecution = ({
             <h2 className="text-xl font-semibold text-white mb-4 text-center">
               O que deseja fazer?
             </h2>
+            <p className="text-white/60 text-sm mb-4 text-center">
+              O treino está em andamento. Use o botão "Pausar" ao lado do relógio se quiser continuar depois.
+            </p>
             <div className="space-y-3">
-              <button
-                onClick={handlePausarEVoltar}
-                className="w-full bg-blue-500/20 hover:bg-blue-500/30 text-blue-400 py-3 rounded-xl font-medium transition-all active:scale-95"
-              >
-                Pausar e Voltar
-              </button>
               <button
                 onClick={handleEncerrarTreino}
                 className="w-full bg-red-500/20 hover:bg-red-500/30 text-red-400 py-3 rounded-xl font-medium transition-all active:scale-95"

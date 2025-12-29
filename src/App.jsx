@@ -1,7 +1,8 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
-import { RotateCcw, ArrowLeft, Plus, Trash2, X, Edit2, Download, Upload } from 'lucide-react'
+import { RotateCcw, ArrowLeft, Plus, Trash2, X, Edit2, Upload, Settings } from 'lucide-react'
 import { Header } from './components/Header'
 import { Footer } from './components/Footer'
+import { Sidebar } from './components/Layout/Sidebar'
 import { ModalConfirmacao } from './components/Modals/ModalConfirmacao'
 import { ModalInfo } from './components/Modals/ModalInfo'
 import { ModalResumoSemanal } from './components/Modals/ModalResumoSemanal'
@@ -47,6 +48,8 @@ function App() {
   const [exercicioEditado, setExercicioEditado] = useState({ nome: '', series: 4, repeticoes: '12', link: '', metodo: '', descanso: 120 })
   const [periodoStats, setPeriodoStats] = useState('semana')
   const [mostrarHistoricoCompleto, setMostrarHistoricoCompleto] = useState(false)
+  const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [mostrarConfiguracoes, setMostrarConfiguracoes] = useState(false)
 
   const [novoExercicio, setNovoExercicio] = useState({ nome: '', series: 4, repeticoes: '12', link: '', metodo: '', descanso: 120 })
 
@@ -295,35 +298,6 @@ function App() {
     )
   }
 
-  const exportarDados = () => {
-    try {
-      const dados = {
-        treinos: carregarDoLocalStorage('treinos_personalizados', {}),
-        planejamento: carregarDoLocalStorage('planejamento_semanal', {
-          segunda: [], terca: [], quarta: [], quinta: [], sexta: [], sabado: [], domingo: []
-        }),
-        historico: carregarDoLocalStorage('historico_treinos', []),
-        versao: '1.0',
-        dataExportacao: new Date().toISOString()
-      }
-
-      const dadosJSON = JSON.stringify(dados, null, 2)
-      const blob = new Blob([dadosJSON], { type: 'application/json' })
-      const url = URL.createObjectURL(blob)
-      const link = document.createElement('a')
-      link.href = url
-      link.download = `treinos-backup-${new Date().toISOString().split('T')[0]}.json`
-      document.body.appendChild(link)
-      link.click()
-      document.body.removeChild(link)
-      URL.revokeObjectURL(url)
-
-      mostrarInfo('Dados exportados com sucesso!')
-    } catch (error) {
-      console.error('Erro ao exportar dados:', error)
-      mostrarInfo('Erro ao exportar dados.')
-    }
-  }
 
 
 
@@ -679,9 +653,22 @@ function App() {
     }
 
     return (
-      <div className="min-h-screen bg-[#0a0a0a] p-4 pb-8">
-        <div className="max-w-md mx-auto">
-          <div className="flex items-center justify-between mb-6 mt-4">
+      <>
+        <Sidebar
+          abaAtiva={abaAtiva}
+          onAbaChange={setAbaAtiva}
+          isOpen={sidebarOpen}
+          onToggle={() => setSidebarOpen(!sidebarOpen)}
+          onCreateTreino={criarNovoTreino}
+        />
+        <div className="lg:ml-64 min-h-screen bg-[#0a0a0a]">
+          <Header
+            abaAtiva={abaAtiva}
+            onToggleMenu={() => setSidebarOpen(!sidebarOpen)}
+          />
+          <div className="p-4 pb-8">
+            <div className="max-w-4xl mx-auto">
+              <div className="flex items-center justify-between mb-6 mt-4">
             <button
               onClick={salvarEdicaoTreino}
               className="text-white/60 hover:text-white font-medium flex items-center gap-2 text-sm"
@@ -944,14 +931,15 @@ function App() {
               </button>
             </div>
           </div>
+            </div>
+          </div>
+          <Footer />
         </div>
-
-        <Footer />
 
         <ModalConfirmacao />
         <ModalInfo />
         <ModalResumoSemanal />
-      </div>
+      </>
     )
   }
 
@@ -968,14 +956,20 @@ function App() {
 
     return (
       <>
-        <Header
+        <Sidebar
           abaAtiva={abaAtiva}
           onAbaChange={setAbaAtiva}
-          onVoltarInicio={voltarAoInicio}
+          isOpen={sidebarOpen}
+          onToggle={() => setSidebarOpen(!sidebarOpen)}
           onCreateTreino={criarNovoTreino}
         />
-        <div className="min-h-screen bg-[#0a0a0a] p-4 pb-8">
-          <div className="max-w-md mx-auto">
+        <div className="lg:ml-64 min-h-screen bg-[#0a0a0a]">
+          <Header
+            abaAtiva={abaAtiva}
+            onToggleMenu={() => setSidebarOpen(!sidebarOpen)}
+          />
+          <div className="p-4 pb-8">
+          <div className="max-w-4xl mx-auto">
             <div className="flex items-center justify-between mb-6 mt-4">
               <h2 className="text-xl font-semibold text-white">
                 Planejamento Semanal
@@ -1072,9 +1066,9 @@ function App() {
               ))}
             </div>
           </div>
+          </div>
+          <Footer />
         </div>
-
-        <Footer />
 
         <ModalConfirmacao modal={modalConfirmacao} onClose={() => setModalConfirmacao(null)} />
         <ModalInfo modal={modalInfo} onClose={() => setModalInfo(null)} />
@@ -1126,15 +1120,21 @@ function App() {
 
     return (
       <>
-        <Header
+        <Sidebar
           abaAtiva={abaAtiva}
           onAbaChange={setAbaAtiva}
-          onVoltarInicio={voltarAoInicio}
+          isOpen={sidebarOpen}
+          onToggle={() => setSidebarOpen(!sidebarOpen)}
           onCreateTreino={criarNovoTreino}
         />
-        <div className="min-h-screen bg-[#0a0a0a] p-4 pb-8">
-          <div className="max-w-md mx-auto">
-            <div className="flex gap-2 mb-6 mt-4">
+        <div className="lg:ml-64 min-h-screen bg-[#0a0a0a]">
+          <Header
+            abaAtiva={abaAtiva}
+            onToggleMenu={() => setSidebarOpen(!sidebarOpen)}
+          />
+          <div className="p-4 pb-8">
+            <div className="max-w-4xl mx-auto">
+              <div className="flex gap-2 mb-6 mt-4">
               {['semana', 'quinzena', 'mes'].map(periodo => (
                 <button
                   key={periodo}
@@ -1244,7 +1244,33 @@ function App() {
                   })()}
                 </div>
               </div>
+
+              {/* Configurações (menos exposto) */}
+              <div className="bg-[#1a1a1a] border border-white/5 rounded-2xl p-5">
+                <button
+                  onClick={() => setMostrarConfiguracoes(!mostrarConfiguracoes)}
+                  className="w-full flex items-center justify-between text-white/60 hover:text-white transition-colors"
+                >
+                  <div className="flex items-center gap-2">
+                    <Settings className="w-4 h-4" />
+                    <span className="text-sm font-medium">Configurações</span>
+                  </div>
+                  <span className="text-xs">{mostrarConfiguracoes ? '▼' : '▶'}</span>
+                </button>
+                {mostrarConfiguracoes && (
+                  <div className="mt-4 pt-4 border-t border-white/5">
+                    <button
+                      onClick={resetarHistorico}
+                      className="w-full bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 text-red-400 font-medium py-2.5 px-4 rounded-lg flex items-center justify-center gap-2 transition-all active:scale-95 text-sm"
+                    >
+                      <RotateCcw className="w-4 h-4" />
+                      <span>Resetar Histórico</span>
+                    </button>
+                  </div>
+                )}
+              </div>
             </div>
+          </div>
           </div>
         </div>
 
@@ -1384,14 +1410,20 @@ function App() {
 
     return (
       <>
-        <Header
+        <Sidebar
           abaAtiva={abaAtiva}
           onAbaChange={setAbaAtiva}
-          onVoltarInicio={voltarAoInicio}
+          isOpen={sidebarOpen}
+          onToggle={() => setSidebarOpen(!sidebarOpen)}
           onCreateTreino={criarNovoTreino}
         />
-        <div className="min-h-screen bg-[#0a0a0a] p-4 pb-8">
-          <div className="max-w-md mx-auto">
+        <div className="lg:ml-64 min-h-screen bg-[#0a0a0a]">
+          <Header
+            abaAtiva={abaAtiva}
+            onToggleMenu={() => setSidebarOpen(!sidebarOpen)}
+          />
+          <div className="p-4 pb-8">
+          <div className="max-w-4xl mx-auto">
             {temPlanejamento && (
               <div className="bg-[#1a1a1a] border border-white/5 rounded-2xl p-4 mb-4">
                 <div className="flex items-center justify-between mb-3">
@@ -1542,31 +1574,17 @@ function App() {
 
             <div className="space-y-2">
               <button
-                onClick={exportarDados}
-                className="w-full bg-blue-500/20 hover:bg-blue-500/30 border border-blue-500/30 text-blue-400 font-medium py-3 px-6 rounded-xl flex items-center justify-center gap-2 transition-all active:scale-95 text-sm"
-              >
-                <Download className="w-4 h-4" />
-                <span>Exportar Dados</span>
-              </button>
-              <button
                 onClick={importarDados}
                 className="w-full bg-green-500/20 hover:bg-green-500/30 border border-green-500/30 text-green-400 font-medium py-3 px-6 rounded-xl flex items-center justify-center gap-2 transition-all active:scale-95 text-sm"
               >
                 <Upload className="w-4 h-4" />
                 <span>Importar Dados</span>
               </button>
-              <button
-                onClick={resetarHistorico}
-                className="w-full bg-[#1a1a1a] border border-white/5 hover:border-white/10 text-white/60 hover:text-white/80 font-medium py-3 px-6 rounded-xl flex items-center justify-center gap-2 transition-all active:scale-95 text-sm"
-              >
-                <RotateCcw className="w-4 h-4" />
-                <span>Resetar Histórico</span>
-              </button>
             </div>
           </div>
+          </div>
+          <Footer />
         </div>
-
-        <Footer />
 
         <ModalConfirmacao modal={modalConfirmacao} onClose={() => setModalConfirmacao(null)} />
         <ModalInfo modal={modalInfo} onClose={() => setModalInfo(null)} />
