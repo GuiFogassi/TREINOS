@@ -5,8 +5,12 @@ import { useTreinoTimer } from '../../hooks/useTreinoTimer'
 import { useTreinoProgress } from '../../hooks/useTreinoProgress'
 import { salvarNoLocalStorage, carregarDoLocalStorage } from '../../utils/storage'
 import { TEMPO_DESCANSO } from '../../constants/treinos'
+import { useTheme } from '../../contexts/ThemeContext'
+import { getThemeClasses } from '../../utils/theme'
 
-const IconeVideo = ({ url }) => {
+const IconeVideo = ({ url, theme }) => {
+  const classes = getThemeClasses(theme)
+  
   if (!url) return null
 
   return (
@@ -14,12 +18,12 @@ const IconeVideo = ({ url }) => {
       href={url}
       target="_blank"
       rel="noopener noreferrer"
-      className="flex items-center justify-center w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 transition-colors group"
+      className={`flex items-center justify-center w-8 h-8 rounded-full ${classes.buttonSecondary} transition-colors group`}
       onClick={(e) => e.stopPropagation()}
       title="Abrir vídeo"
     >
       <svg
-        className="w-5 h-5 text-white/50 group-hover:text-white/70"
+        className={`w-5 h-5 ${classes.textSecondary} ${theme === 'light' ? 'group-hover:text-[#2d2d2d]' : 'group-hover:text-white/70'} transition-colors`}
         fill="currentColor"
         viewBox="0 0 96.875 96.875"
         xmlns="http://www.w3.org/2000/svg"
@@ -44,6 +48,9 @@ export const TreinoExecution = ({
   onFecharConclusao,
   onMostrarInfo
 }) => {
+  const { theme } = useTheme()
+  const classes = getThemeClasses(theme)
+  
   const [tempoDescanso, setTempoDescanso] = useState(0)
   const [serieEmDescanso, setSerieEmDescanso] = useState(null)
   const [isPaused, setIsPaused] = useState(false)
@@ -254,26 +261,26 @@ export const TreinoExecution = ({
   const completo = treinoCompleto()
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] pb-32">
+    <div className={`min-h-screen ${classes.bgMain} pb-32`}>
       {mostrarModalVoltar && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-[#1a1a1a] border border-white/10 rounded-2xl p-6 max-w-sm w-full">
-            <h2 className="text-xl font-semibold text-white mb-4 text-center">
+        <div className={`fixed inset-0 z-50 ${classes.bgOverlay} backdrop-blur-sm flex items-center justify-center p-4`}>
+          <div className={`${classes.bgCard} border ${classes.borderSecondary} rounded-2xl p-6 max-w-sm w-full`}>
+            <h2 className={`text-xl font-semibold ${classes.textPrimary} mb-4 text-center`}>
               O que deseja fazer?
             </h2>
-            <p className="text-white/60 text-sm mb-4 text-center">
+            <p className={`${classes.textSecondary} text-sm mb-4 text-center`}>
               O treino está em andamento. Use o botão "Pausar" ao lado do relógio se quiser continuar depois.
             </p>
             <div className="space-y-3">
               <button
                 onClick={handleEncerrarTreino}
-                className="w-full bg-red-500/20 hover:bg-red-500/30 text-red-400 py-3 rounded-xl font-medium transition-all active:scale-95"
+                className={`w-full ${classes.redBg} ${classes.redHover} ${classes.redText} py-3 rounded-xl font-medium transition-all active:scale-95`}
               >
                 Encerrar Treino
               </button>
               <button
                 onClick={() => setMostrarModalVoltar(false)}
-                className="w-full bg-white/10 hover:bg-white/20 text-white py-3 rounded-xl font-medium transition-all active:scale-95"
+                className={`w-full ${classes.buttonPrimary} py-3 rounded-xl font-medium transition-all active:scale-95`}
               >
                 Cancelar
               </button>
@@ -283,17 +290,17 @@ export const TreinoExecution = ({
       )}
 
       {mostrarConclusao && (
-        <div className="fixed inset-0 z-30 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-[#1a1a1a] border border-white/10 rounded-2xl p-6 max-w-sm w-full">
+        <div className={`fixed inset-0 z-30 ${classes.bgOverlay} backdrop-blur-sm flex items-center justify-center p-4`}>
+          <div className={`${classes.bgCard} border ${classes.borderSecondary} rounded-2xl p-6 max-w-sm w-full`}>
             <div className="text-center mb-6">
               <div className="text-5xl mb-4">🎉</div>
-              <h2 className="text-2xl font-semibold text-white mb-2">
+              <h2 className={`text-2xl font-semibold ${classes.textPrimary} mb-2`}>
                 Parabéns!
               </h2>
-              <p className="text-white/60 text-sm mb-1">
+              <p className={`${classes.textSecondary} text-sm mb-1`}>
                 Treino finalizado com sucesso
               </p>
-              <p className="text-white/40 text-xs">
+              <p className={`${classes.textTertiary} text-xs`}>
                 Tempo total: {formatarTempo(tempoTotal)}
               </p>
             </div>
@@ -303,7 +310,7 @@ export const TreinoExecution = ({
                 limparProgresso()
                 onFecharConclusao()
               }}
-              className="w-full bg-white/10 hover:bg-white/20 text-white font-medium py-3 rounded-xl transition-all active:scale-95"
+              className={`w-full ${classes.buttonPrimary} font-medium py-3 rounded-xl transition-all active:scale-95`}
             >
               Fechar
             </button>
@@ -311,11 +318,11 @@ export const TreinoExecution = ({
         </div>
       )}
 
-      <div className="sticky top-0 z-10 bg-[#0a0a0a]/95 backdrop-blur-sm border-b border-white/5 px-4 py-4">
+      <div className={`sticky top-0 z-10 ${classes.bgMain}/95 backdrop-blur-sm border-b ${classes.borderPrimary} px-4 py-4`}>
         <div className="max-w-md mx-auto flex items-center justify-between">
           <button
             onClick={handleVoltar}
-            className="text-white/60 hover:text-white font-medium flex items-center gap-2 text-sm"
+            className={`${classes.textSecondary} ${theme === 'light' ? 'hover:text-[#2d2d2d]' : 'hover:text-white'} font-medium flex items-center gap-2 text-sm transition-colors`}
             aria-label="Voltar para lista de treinos"
           >
             <ArrowLeft className="w-4 h-4" aria-hidden="true" />
@@ -325,7 +332,7 @@ export const TreinoExecution = ({
             {isPaused ? (
               <button
                 onClick={continuarTreino}
-                className="bg-green-500/20 hover:bg-green-500/30 text-green-400 px-3 py-1.5 rounded-lg font-medium flex items-center gap-2 text-sm transition-all active:scale-95"
+                className={`${classes.greenBg} ${classes.greenHover} ${classes.greenText} px-3 py-1.5 rounded-lg font-medium flex items-center gap-2 text-sm transition-all active:scale-95`}
                 aria-label="Continuar treino"
               >
                 <Play className="w-4 h-4" />
@@ -334,7 +341,7 @@ export const TreinoExecution = ({
             ) : (
               <button
                 onClick={pausarTreino}
-                className="bg-yellow-500/20 hover:bg-yellow-500/30 text-yellow-400 px-3 py-1.5 rounded-lg font-medium flex items-center gap-2 text-sm transition-all active:scale-95"
+                className={`${theme === 'light' ? 'bg-[#ffe0b3]/30 hover:bg-[#ffe0b3]/40 text-[#b8864a]' : 'bg-yellow-500/20 hover:bg-yellow-500/30 text-yellow-400'} px-3 py-1.5 rounded-lg font-medium flex items-center gap-2 text-sm transition-all active:scale-95`}
                 aria-label="Pausar treino"
               >
                 <Pause className="w-4 h-4" />
@@ -342,8 +349,8 @@ export const TreinoExecution = ({
               </button>
             )}
             <div className="flex items-center gap-2">
-              <Clock className="w-4 h-4 text-white/40" />
-              <span className="font-semibold text-base text-white">
+              <Clock className={`w-4 h-4 ${classes.textTertiary}`} />
+              <span className={`font-semibold text-base ${classes.textPrimary}`}>
                 {formatarTempo(tempoTotal)}
               </span>
             </div>
@@ -360,20 +367,20 @@ export const TreinoExecution = ({
           return (
             <div
               key={exercicioIndex}
-              className={`bg-[#1a1a1a] border rounded-2xl p-5 transition-all ${pulado
-                ? 'border-orange-500/30 bg-orange-500/5'
+              className={`${classes.bgCard} border rounded-2xl p-5 transition-all ${pulado
+                ? `${classes.orangeBorder} ${classes.orangeBg}`
                 : completoExercicio
-                  ? 'border-green-500/30 bg-green-500/5'
-                  : 'border-white/5 hover:border-white/10'
+                  ? `${classes.greenBorder} ${classes.greenBg}`
+                  : `${classes.borderPrimary} ${theme === 'light' ? 'hover:border-[#d0d0d0]' : 'hover:border-white/10'}`
                 }`}
             >
               <div className="mb-4">
                 <div className="flex items-start justify-between gap-3 mb-1">
                   <div className="flex-1">
-                    <h2 className="text-lg font-semibold text-white flex items-center gap-2">
+                    <h2 className={`text-lg font-semibold ${classes.textPrimary} flex items-center gap-2`}>
                       {exercicio.nome}
                       {pulado && (
-                        <span className="text-xs bg-orange-500/20 text-orange-400 px-2 py-0.5 rounded">
+                        <span className={`text-xs ${classes.orangeBg} ${classes.orangeText} px-2 py-0.5 rounded`}>
                           Pulado
                         </span>
                       )}
@@ -382,13 +389,13 @@ export const TreinoExecution = ({
                   <div className="flex items-center gap-2">
                     {exercicio.link && (
                       <div className="flex-shrink-0">
-                        <IconeVideo url={exercicio.link} />
+                        <IconeVideo url={exercicio.link} theme={theme} />
                       </div>
                     )}
                     {!pulado && (
                       <button
                         onClick={() => pularExercicio(exercicioIndex)}
-                        className="text-orange-400/60 hover:text-orange-400 p-1.5 rounded transition-colors"
+                        className={`${classes.orangeText} ${theme === 'light' ? 'opacity-70 hover:opacity-100' : 'opacity-60 hover:opacity-100'} p-1.5 rounded transition-opacity`}
                         aria-label={`Pular exercício ${exercicio.nome}`}
                         title="Pular exercício"
                       >
@@ -398,7 +405,7 @@ export const TreinoExecution = ({
                     {pulado && (
                       <button
                         onClick={() => desfazerPularExercicio(exercicioIndex)}
-                        className="text-green-400/60 hover:text-green-400 p-1.5 rounded transition-colors"
+                        className={`${classes.greenText} ${theme === 'light' ? 'opacity-70 hover:opacity-100' : 'opacity-60 hover:opacity-100'} p-1.5 rounded transition-opacity`}
                         aria-label={`Desfazer pular exercício ${exercicio.nome}`}
                         title="Desfazer pular"
                       >
@@ -408,15 +415,15 @@ export const TreinoExecution = ({
                   </div>
                 </div>
                 {exercicio.metodo && (
-                  <p className="text-xs text-white/50 mb-1">
+                  <p className={`text-xs ${classes.textSecondary} mb-1`}>
                     Método: {exercicio.metodo}
                   </p>
                 )}
-                <p className="text-xs text-white/40">
+                <p className={`text-xs ${classes.textTertiary}`}>
                   {exercicio.series} séries × {exercicio.repeticoes} reps
                 </p>
                 {exercicio.descanso && (
-                  <p className="text-xs text-white/30 mt-1">
+                  <p className={`text-xs ${classes.textTertiary} mt-1`}>
                     Descanso: {formatarTempoDescanso(exercicio.descanso)}
                   </p>
                 )}
@@ -447,10 +454,10 @@ export const TreinoExecution = ({
                         }
                         aria-pressed={feita}
                         className={`w-12 h-12 rounded-full font-semibold text-sm transition-all ${feita
-                          ? 'bg-green-500 text-white'
+                          ? `${theme === 'light' ? 'bg-[#5a9a5a]' : 'bg-green-500'} ${classes.textPrimary}`
                           : disponivel
-                            ? 'bg-white/10 text-white hover:bg-white/20 active:scale-95 border border-white/10'
-                            : 'bg-white/5 text-white/20 border border-white/5 cursor-not-allowed'
+                            ? `${classes.buttonPrimary} active:scale-95 border ${classes.borderSecondary}`
+                            : `${theme === 'light' ? 'bg-[#f5f5f0]' : 'bg-white/5'} ${classes.textTertiary} border ${classes.borderPrimary} cursor-not-allowed`
                           }`}
                       >
                         {feita ? <CheckCircle className="w-5 h-5 mx-auto" aria-hidden="true" /> : serieIndex}
@@ -465,21 +472,21 @@ export const TreinoExecution = ({
       </div>
 
       {tempoDescanso > 0 && (
-        <div className="fixed bottom-0 left-0 right-0 bg-[#1a1a1a] border-t border-white/10 backdrop-blur-sm z-20">
+        <div className={`fixed bottom-0 left-0 right-0 ${classes.bgCard} border-t ${classes.borderSecondary} backdrop-blur-sm z-20`}>
           <div className="max-w-md mx-auto px-4 py-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="bg-white/10 rounded-full p-2">
-                  <Clock className="w-5 h-5 text-white/80" />
+                <div className={`${classes.buttonSecondary} rounded-full p-2`}>
+                  <Clock className={`w-5 h-5 ${theme === 'light' ? 'text-[#2d2d2d]' : 'text-white/80'}`} />
                 </div>
                 <div>
-                  <p className="text-xs text-white/50">Descanso</p>
-                  <p className="text-xl font-semibold text-white">{formatarTempo(tempoDescanso)}</p>
+                  <p className={`text-xs ${classes.textSecondary}`}>Descanso</p>
+                  <p className={`text-xl font-semibold ${classes.textPrimary}`}>{formatarTempo(tempoDescanso)}</p>
                 </div>
               </div>
               <button
                 onClick={pularDescanso}
-                className="bg-white/10 hover:bg-white/20 text-white px-4 py-2.5 rounded-xl font-medium flex items-center gap-2 active:scale-95 transition-all text-sm border border-white/10"
+                className={`${classes.buttonPrimary} px-4 py-2.5 rounded-xl font-medium flex items-center gap-2 active:scale-95 transition-all text-sm border ${classes.borderSecondary}`}
                 aria-label="Pular tempo de descanso"
               >
                 <SkipForward className="w-4 h-4" aria-hidden="true" />
@@ -491,11 +498,11 @@ export const TreinoExecution = ({
       )}
 
       {completo && !mostrarConclusao && (
-        <div className="fixed bottom-0 left-0 right-0 bg-[#1a1a1a] border-t border-green-500/30 backdrop-blur-sm z-20">
+        <div className={`fixed bottom-0 left-0 right-0 ${classes.bgCard} border-t ${classes.greenBorder} backdrop-blur-sm z-20`}>
           <div className="max-w-md mx-auto px-4 py-4">
             <button
               onClick={handleFinalizar}
-              className="w-full bg-green-500/20 hover:bg-green-500/30 text-green-400 font-semibold py-4 rounded-xl flex items-center justify-center gap-2 active:scale-95 transition-all border border-green-500/30"
+              className={`w-full ${classes.greenBg} ${classes.greenHover} ${classes.greenText} font-semibold py-4 rounded-xl flex items-center justify-center gap-2 active:scale-95 transition-all border ${classes.greenBorder}`}
             >
               <CheckCircle className="w-5 h-5" />
               <span>Finalizar Treino</span>

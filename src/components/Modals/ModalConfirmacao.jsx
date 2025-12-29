@@ -1,6 +1,11 @@
 import { useEffect } from 'react'
+import { useTheme } from '../../contexts/ThemeContext'
+import { getThemeClasses } from '../../utils/theme'
 
 export const ModalConfirmacao = ({ modal, onClose }) => {
+  const { theme } = useTheme()
+  const classes = getThemeClasses(theme)
+  
   if (!modal) return null
 
   useEffect(() => {
@@ -15,24 +20,24 @@ export const ModalConfirmacao = ({ modal, onClose }) => {
 
   return (
     <div
-      className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4"
+      className={`fixed inset-0 z-50 ${classes.bgOverlay} backdrop-blur-sm flex items-center justify-center p-4`}
       role="dialog"
       aria-modal="true"
       aria-labelledby="modal-confirmacao-titulo"
     >
-      <div className="bg-[#1a1a1a] border border-white/10 rounded-2xl p-6 max-w-sm w-full">
-        <p id="modal-confirmacao-titulo" className="text-white mb-6 text-center">{modal.mensagem}</p>
+      <div className={`${classes.bgCard} border ${classes.borderSecondary} rounded-2xl p-6 max-w-sm w-full`}>
+        <p id="modal-confirmacao-titulo" className={`${classes.textPrimary} mb-6 text-center`}>{modal.mensagem}</p>
         <div className="flex gap-3">
           <button
             onClick={modal.onCancel}
-            className="flex-1 bg-white/10 hover:bg-white/20 text-white py-3 rounded-xl font-medium transition-all active:scale-95"
+            className={`flex-1 ${classes.buttonPrimary} py-3 rounded-xl font-medium transition-all active:scale-95`}
             aria-label="Cancelar ação"
           >
             Cancelar
           </button>
           <button
             onClick={modal.onConfirm}
-            className="flex-1 bg-red-500/20 hover:bg-red-500/30 text-red-400 py-3 rounded-xl font-medium transition-all active:scale-95"
+            className={`flex-1 ${classes.redBg} ${classes.redHover} ${classes.redText} py-3 rounded-xl font-medium transition-all active:scale-95`}
             aria-label="Confirmar ação"
             autoFocus
           >

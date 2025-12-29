@@ -3,6 +3,8 @@ import { RotateCcw, ArrowLeft, Plus, Trash2, X, Edit2, Upload, Settings } from '
 import { Header } from './components/Header'
 import { Footer } from './components/Footer'
 import { Sidebar } from './components/Layout/Sidebar'
+import { useTheme } from './contexts/ThemeContext'
+import { getThemeClasses } from './utils/theme'
 import { ModalConfirmacao } from './components/Modals/ModalConfirmacao'
 import { ModalInfo } from './components/Modals/ModalInfo'
 import { ModalResumoSemanal } from './components/Modals/ModalResumoSemanal'
@@ -19,6 +21,9 @@ import { calcularEstatisticas } from './utils/estatisticas'
 
 
 function App() {
+  const { theme } = useTheme()
+  const classes = getThemeClasses(theme)
+  
   const [treinos, setTreinos] = useState({})
   const [treinoSelecionado, setTreinoSelecionado] = useState(null)
   const [modoEdicao, setModoEdicao] = useState(false)
@@ -661,7 +666,7 @@ function App() {
           onToggle={() => setSidebarOpen(!sidebarOpen)}
           onCreateTreino={criarNovoTreino}
         />
-        <div className="lg:ml-64 min-h-screen bg-[#0a0a0a]">
+        <div className={`lg:ml-64 min-h-screen ${classes.bgMain}`}>
           <Header
             abaAtiva={abaAtiva}
             onToggleMenu={() => setSidebarOpen(!sidebarOpen)}
@@ -671,14 +676,14 @@ function App() {
               <div className="flex items-center justify-between mb-6 mt-4">
             <button
               onClick={salvarEdicaoTreino}
-              className="text-white/60 hover:text-white font-medium flex items-center gap-2 text-sm"
+              className={`${classes.textSecondary} ${theme === 'light' ? 'hover:text-[#2d2d2d]' : 'hover:text-white'} font-medium flex items-center gap-2 text-sm transition-colors`}
             >
               <ArrowLeft className="w-4 h-4" />
               Voltar
             </button>
             <button
               onClick={() => deletarTreino(treinoEditando)}
-              className="text-red-400/60 hover:text-red-400 text-sm"
+              className={`${classes.redText} ${theme === 'light' ? 'opacity-70 hover:opacity-100' : 'opacity-60 hover:opacity-100'} text-sm transition-opacity`}
             >
               Deletar
             </button>
@@ -689,7 +694,7 @@ function App() {
               type="text"
               value={treino.nome}
               onChange={(e) => atualizarNomeTreino(e.target.value)}
-              className="w-full bg-[#1a1a1a] border border-white/5 rounded-xl px-4 py-3 text-white text-lg font-semibold focus:outline-none focus:border-white/20"
+              className={`w-full ${classes.bgCard} border ${classes.borderPrimary} rounded-xl px-4 py-3 ${classes.textPrimary} text-lg font-semibold focus:outline-none ${theme === 'light' ? 'focus:border-[#d0d0d0]' : 'focus:border-white/20'}`}
               placeholder="Nome do treino"
             />
           </div>
@@ -698,7 +703,7 @@ function App() {
             {treino.exercicios.map((exercicio, index) => (
               <div
                 key={index}
-                className="bg-[#1a1a1a] border border-white/5 rounded-xl p-4"
+                className={`${classes.bgCard} border ${classes.borderPrimary} rounded-xl p-4`}
               >
                 {exercicioEditando === index ? (
                   <div className="space-y-3">
@@ -707,14 +712,14 @@ function App() {
                       value={exercicioEditado.nome}
                       onChange={(e) => setExercicioEditado({ ...exercicioEditado, nome: e.target.value })}
                       placeholder="Nome do exercício"
-                      className="w-full bg-[#0a0a0a] border border-white/5 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-white/20"
+                      className={`w-full ${classes.bgMain} border ${classes.borderPrimary} rounded-lg px-3 py-2 ${classes.textPrimary} text-sm focus:outline-none ${theme === 'light' ? 'focus:border-[#d0d0d0]' : 'focus:border-white/20'}`}
                     />
                     <div>
-                      <label className="text-xs text-white/40 mb-1 block">Método (opcional)</label>
+                      <label className={`text-xs ${classes.textTertiary} mb-1 block`}>Método (opcional)</label>
                       <select
                         value={exercicioEditado.metodo}
                         onChange={(e) => setExercicioEditado({ ...exercicioEditado, metodo: e.target.value })}
-                        className="w-full bg-[#0a0a0a] border border-white/5 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-white/20 mb-2"
+                        className={`w-full ${classes.bgMain} border ${classes.borderPrimary} rounded-lg px-3 py-2 ${classes.textPrimary} text-sm focus:outline-none ${theme === 'light' ? 'focus:border-[#d0d0d0]' : 'focus:border-white/20'} mb-2`}
                       >
                         <option value="">Selecione ou digite abaixo</option>
                         {METODOS_TREINO.map(metodo => (
@@ -726,65 +731,65 @@ function App() {
                         value={exercicioEditado.metodo}
                         onChange={(e) => setExercicioEditado({ ...exercicioEditado, metodo: e.target.value })}
                         placeholder="Ou digite um método personalizado..."
-                        className="w-full bg-[#0a0a0a] border border-white/5 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-white/20"
+                        className={`w-full ${classes.bgMain} border ${classes.borderPrimary} rounded-lg px-3 py-2 ${classes.textPrimary} text-sm focus:outline-none ${theme === 'light' ? 'focus:border-[#d0d0d0]' : 'focus:border-white/20'}`}
                       />
                     </div>
                     <div className="flex gap-3">
                       <div className="flex-1">
-                        <label className="text-xs text-white/40 mb-1 block">Séries</label>
+                        <label className={`text-xs ${classes.textTertiary} mb-1 block`}>Séries</label>
                         <input
                           type="number"
                           value={exercicioEditado.series}
                           onChange={(e) => setExercicioEditado({ ...exercicioEditado, series: parseInt(e.target.value) || 0 })}
                           min="1"
-                          className="w-full bg-[#0a0a0a] border border-white/5 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-white/20"
+                          className={`w-full ${classes.bgMain} border ${classes.borderPrimary} rounded-lg px-3 py-2 ${classes.textPrimary} text-sm focus:outline-none ${theme === 'light' ? 'focus:border-[#d0d0d0]' : 'focus:border-white/20'}`}
                         />
                       </div>
                       <div className="flex-1">
-                        <label className="text-xs text-white/40 mb-1 block">Repetições</label>
+                        <label className={`text-xs ${classes.textTertiary} mb-1 block`}>Repetições</label>
                         <input
                           type="text"
                           value={exercicioEditado.repeticoes}
                           onChange={(e) => setExercicioEditado({ ...exercicioEditado, repeticoes: e.target.value })}
                           placeholder="Ex: 12, 8 a 10, 5x15/12/10..."
-                          className="w-full bg-[#0a0a0a] border border-white/5 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-white/20"
+                          className={`w-full ${classes.bgMain} border ${classes.borderPrimary} rounded-lg px-3 py-2 ${classes.textPrimary} text-sm focus:outline-none ${theme === 'light' ? 'focus:border-[#d0d0d0]' : 'focus:border-white/20'}`}
                         />
                       </div>
                     </div>
                     <div>
-                      <label className="text-xs text-white/40 mb-1 block">Descanso (segundos)</label>
+                      <label className={`text-xs ${classes.textTertiary} mb-1 block`}>Descanso (segundos)</label>
                       <input
                         type="number"
                         value={exercicioEditado.descanso || 120}
                         onChange={(e) => setExercicioEditado({ ...exercicioEditado, descanso: parseInt(e.target.value) || 120 })}
                         min="0"
                         placeholder="120"
-                        className="w-full bg-[#0a0a0a] border border-white/5 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-white/20"
+                        className={`w-full ${classes.bgMain} border ${classes.borderPrimary} rounded-lg px-3 py-2 ${classes.textPrimary} text-sm focus:outline-none ${theme === 'light' ? 'focus:border-[#d0d0d0]' : 'focus:border-white/20'}`}
                       />
-                      <p className="text-xs text-white/30 mt-1">
+                      <p className={`text-xs ${classes.textTertiary} mt-1`}>
                         Ex: 20seg = 20, 1min = 60, 1min30seg = 90, 2min = 120
                       </p>
                     </div>
                     <div>
-                      <label className="text-xs text-white/40 mb-1 block">Link do vídeo (opcional)</label>
+                      <label className={`text-xs ${classes.textTertiary} mb-1 block`}>Link do vídeo (opcional)</label>
                       <input
                         type="url"
                         value={exercicioEditado.link}
                         onChange={(e) => setExercicioEditado({ ...exercicioEditado, link: e.target.value })}
                         placeholder="YouTube, Instagram, TikTok..."
-                        className="w-full bg-[#0a0a0a] border border-white/5 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-white/20"
+                        className={`w-full ${classes.bgMain} border ${classes.borderPrimary} rounded-lg px-3 py-2 ${classes.textPrimary} text-sm focus:outline-none ${theme === 'light' ? 'focus:border-[#d0d0d0]' : 'focus:border-white/20'}`}
                       />
                     </div>
                     <div className="flex gap-2">
                       <button
                         onClick={salvarEdicaoExercicio}
-                        className="flex-1 bg-green-500/20 hover:bg-green-500/30 text-green-400 py-2 rounded-lg font-medium text-sm transition-all active:scale-95"
+                        className={`flex-1 ${classes.greenBg} ${classes.greenHover} ${classes.greenText} py-2 rounded-lg font-medium text-sm transition-all active:scale-95`}
                       >
                         Salvar
                       </button>
                       <button
                         onClick={cancelarEdicaoExercicio}
-                        className="flex-1 bg-white/10 hover:bg-white/20 text-white py-2 rounded-lg font-medium text-sm transition-all active:scale-95"
+                        className={`flex-1 ${classes.buttonPrimary} py-2 rounded-lg font-medium text-sm transition-all active:scale-95`}
                       >
                         Cancelar
                       </button>
@@ -794,17 +799,17 @@ function App() {
                   <>
                     <div className="flex items-center justify-between mb-2">
                       <div className="flex-1">
-                        <h3 className="text-white font-medium mb-1">{exercicio.nome}</h3>
+                        <h3 className={`${classes.textPrimary} font-medium mb-1`}>{exercicio.nome}</h3>
                         {exercicio.metodo && (
-                          <p className="text-xs text-white/50 mb-1">
+                          <p className={`text-xs ${classes.textSecondary} mb-1`}>
                             Método: {exercicio.metodo}
                           </p>
                         )}
-                        <p className="text-xs text-white/40">
+                        <p className={`text-xs ${classes.textTertiary}`}>
                           {exercicio.series} séries × {exercicio.repeticoes} reps
                         </p>
                         {exercicio.descanso && (
-                          <p className="text-xs text-white/30 mt-1">
+                          <p className={`text-xs ${classes.textTertiary} mt-1`}>
                             Descanso: {formatarTempoDescanso(exercicio.descanso)}
                           </p>
                         )}
@@ -812,26 +817,26 @@ function App() {
                       <div className="flex gap-1">
                         <button
                           onClick={() => iniciarEdicaoExercicio(index)}
-                          className="text-blue-400/60 hover:text-blue-400 p-2"
+                          className={`${classes.blueText} ${theme === 'light' ? 'opacity-70 hover:opacity-100' : 'opacity-60 hover:opacity-100'} p-2 transition-opacity`}
                         >
                           <Edit2 className="w-4 h-4" />
                         </button>
                         <button
                           onClick={() => removerExercicio(index)}
-                          className="text-red-400/60 hover:text-red-400 p-2"
+                          className={`${classes.redText} ${theme === 'light' ? 'opacity-70 hover:opacity-100' : 'opacity-60 hover:opacity-100'} p-2 transition-opacity`}
                         >
                           <Trash2 className="w-4 h-4" />
                         </button>
                       </div>
                     </div>
                     {exercicio.link && (
-                      <div className="mt-2 pt-2 border-t border-white/5">
-                        <p className="text-xs text-white/40 mb-1">Link do vídeo:</p>
+                      <div className={`mt-2 pt-2 border-t ${classes.borderPrimary}`}>
+                        <p className={`text-xs ${classes.textTertiary} mb-1`}>Link do vídeo:</p>
                         <a
                           href={exercicio.link}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-xs text-blue-400 hover:text-blue-300 break-all"
+                          className={`text-xs ${classes.blueText} ${theme === 'light' ? 'hover:text-[#4a7a8a]' : 'hover:text-blue-300'} break-all transition-colors`}
                         >
                           {exercicio.link}
                         </a>
@@ -843,22 +848,22 @@ function App() {
             ))}
           </div>
 
-          <div className="bg-[#1a1a1a] border border-white/5 rounded-xl p-4 mb-4">
-            <h3 className="text-white font-medium mb-4 text-sm">Adicionar Exercício</h3>
+          <div className={`${classes.bgCard} border ${classes.borderPrimary} rounded-xl p-4 mb-4`}>
+            <h3 className={`${classes.textPrimary} font-medium mb-4 text-sm`}>Adicionar Exercício</h3>
             <div className="space-y-3">
               <input
                 type="text"
                 value={novoExercicio.nome}
                 onChange={(e) => setNovoExercicio({ ...novoExercicio, nome: e.target.value })}
                 placeholder="Nome do exercício"
-                className="w-full bg-[#0a0a0a] border border-white/5 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-white/20"
+                className={`w-full ${classes.bgMain} border ${classes.borderPrimary} rounded-lg px-3 py-2 ${classes.textPrimary} text-sm focus:outline-none ${theme === 'light' ? 'focus:border-[#d0d0d0]' : 'focus:border-white/20'}`}
               />
               <div>
-                <label className="text-xs text-white/40 mb-1 block">Método (opcional)</label>
+                <label className={`text-xs ${classes.textTertiary} mb-1 block`}>Método (opcional)</label>
                 <select
                   value={novoExercicio.metodo}
                   onChange={(e) => setNovoExercicio({ ...novoExercicio, metodo: e.target.value })}
-                  className="w-full bg-[#0a0a0a] border border-white/5 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-white/20 mb-2"
+                  className={`w-full ${classes.bgMain} border ${classes.borderPrimary} rounded-lg px-3 py-2 ${classes.textPrimary} text-sm focus:outline-none ${theme === 'light' ? 'focus:border-[#d0d0d0]' : 'focus:border-white/20'} mb-2`}
                 >
                   <option value="">Selecione ou digite abaixo</option>
                   {METODOS_TREINO.map(metodo => (
@@ -870,61 +875,61 @@ function App() {
                   value={novoExercicio.metodo}
                   onChange={(e) => setNovoExercicio({ ...novoExercicio, metodo: e.target.value })}
                   placeholder="Ou digite um método personalizado..."
-                  className="w-full bg-[#0a0a0a] border border-white/5 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-white/20"
+                  className={`w-full ${classes.bgMain} border ${classes.borderPrimary} rounded-lg px-3 py-2 ${classes.textPrimary} text-sm focus:outline-none ${theme === 'light' ? 'focus:border-[#d0d0d0]' : 'focus:border-white/20'}`}
                 />
               </div>
               <div className="flex gap-3">
                 <div className="flex-1">
-                  <label className="text-xs text-white/40 mb-1 block">Séries</label>
+                  <label className={`text-xs ${classes.textTertiary} mb-1 block`}>Séries</label>
                   <input
                     type="number"
                     value={novoExercicio.series}
                     onChange={(e) => setNovoExercicio({ ...novoExercicio, series: parseInt(e.target.value) || 0 })}
                     min="1"
-                    className="w-full bg-[#0a0a0a] border border-white/5 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-white/20"
+                    className={`w-full ${classes.bgMain} border ${classes.borderPrimary} rounded-lg px-3 py-2 ${classes.textPrimary} text-sm focus:outline-none ${theme === 'light' ? 'focus:border-[#d0d0d0]' : 'focus:border-white/20'}`}
                   />
                 </div>
                 <div className="flex-1">
-                  <label className="text-xs text-white/40 mb-1 block">Repetições</label>
+                  <label className={`text-xs ${classes.textTertiary} mb-1 block`}>Repetições</label>
                   <input
                     type="text"
                     value={novoExercicio.repeticoes}
                     onChange={(e) => setNovoExercicio({ ...novoExercicio, repeticoes: e.target.value })}
                     placeholder="Ex: 12, 8 a 10, 5x15/12/10..."
-                    className="w-full bg-[#0a0a0a] border border-white/5 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-white/20"
+                    className={`w-full ${classes.bgMain} border ${classes.borderPrimary} rounded-lg px-3 py-2 ${classes.textPrimary} text-sm focus:outline-none ${theme === 'light' ? 'focus:border-[#d0d0d0]' : 'focus:border-white/20'}`}
                   />
                 </div>
               </div>
               <div>
-                <label className="text-xs text-white/40 mb-1 block">Descanso (segundos)</label>
+                <label className={`text-xs ${classes.textTertiary} mb-1 block`}>Descanso (segundos)</label>
                 <input
                   type="number"
                   value={novoExercicio.descanso || 120}
                   onChange={(e) => setNovoExercicio({ ...novoExercicio, descanso: parseInt(e.target.value) || 120 })}
                   min="0"
                   placeholder="120"
-                  className="w-full bg-[#0a0a0a] border border-white/5 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-white/20"
+                  className={`w-full ${classes.bgMain} border ${classes.borderPrimary} rounded-lg px-3 py-2 ${classes.textPrimary} text-sm focus:outline-none ${theme === 'light' ? 'focus:border-[#d0d0d0]' : 'focus:border-white/20'}`}
                 />
-                <p className="text-xs text-white/30 mt-1">
+                <p className={`text-xs ${classes.textTertiary} mt-1`}>
                   Ex: 20seg = 20, 1min = 60, 1min30seg = 90, 2min = 120
                 </p>
               </div>
               <div>
-                <label className="text-xs text-white/40 mb-1 block">Link do vídeo (opcional)</label>
+                <label className={`text-xs ${classes.textTertiary} mb-1 block`}>Link do vídeo (opcional)</label>
                 <input
                   type="url"
                   value={novoExercicio.link}
                   onChange={(e) => setNovoExercicio({ ...novoExercicio, link: e.target.value })}
                   placeholder="YouTube, Instagram, TikTok..."
-                  className="w-full bg-[#0a0a0a] border border-white/5 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-white/20"
+                  className={`w-full ${classes.bgMain} border ${classes.borderPrimary} rounded-lg px-3 py-2 ${classes.textPrimary} text-sm focus:outline-none ${theme === 'light' ? 'focus:border-[#d0d0d0]' : 'focus:border-white/20'}`}
                 />
-                <p className="text-xs text-white/30 mt-1">
+                <p className={`text-xs ${classes.textTertiary} mt-1`}>
                   Cole o link do vídeo do exercício
                 </p>
               </div>
               <button
                 onClick={adicionarExercicio}
-                className="w-full bg-white/10 hover:bg-white/20 text-white py-2.5 rounded-lg font-medium flex items-center justify-center gap-2 text-sm transition-all active:scale-95"
+                className={`w-full ${classes.buttonPrimary} py-2.5 rounded-lg font-medium flex items-center justify-center gap-2 text-sm transition-all active:scale-95`}
               >
                 <Plus className="w-4 h-4" />
                 Adicionar
@@ -963,7 +968,7 @@ function App() {
           onToggle={() => setSidebarOpen(!sidebarOpen)}
           onCreateTreino={criarNovoTreino}
         />
-        <div className="lg:ml-64 min-h-screen bg-[#0a0a0a]">
+        <div className={`lg:ml-64 min-h-screen ${classes.bgMain}`}>
           <Header
             abaAtiva={abaAtiva}
             onToggleMenu={() => setSidebarOpen(!sidebarOpen)}
@@ -971,18 +976,18 @@ function App() {
           <div className="p-4 pb-8">
           <div className="max-w-4xl mx-auto">
             <div className="flex items-center justify-between mb-6 mt-4">
-              <h2 className="text-xl font-semibold text-white">
+              <h2 className={`text-xl font-semibold ${classes.textPrimary}`}>
                 Planejamento Semanal
               </h2>
               <button
                 onClick={salvarPlanejamento}
-                className="text-white font-medium text-sm"
+                className={`${classes.textPrimary} font-medium text-sm`}
               >
                 Salvar
               </button>
             </div>
 
-            <p className="text-sm text-white/40 mb-6">
+            <p className={`text-sm ${classes.textSecondary} mb-6`}>
               Defina qual treino será executado em cada dia
             </p>
 
@@ -990,9 +995,9 @@ function App() {
               {diasSemana.map((dia) => (
                 <div
                   key={dia.key}
-                  className="bg-[#1a1a1a] border border-white/5 rounded-xl p-4"
+                  className={`${classes.bgCard} border ${classes.borderPrimary} rounded-xl p-4`}
                 >
-                  <h3 className="text-white font-medium mb-3 text-sm">
+                  <h3 className={`${classes.textPrimary} font-medium mb-3 text-sm`}>
                     {dia.label}
                   </h3>
                   <div className="flex flex-wrap gap-2">
@@ -1000,8 +1005,8 @@ function App() {
                       <button
                         onClick={() => atualizarTreinoDia(dia.key, 'CARDIO')}
                         className={`px-3 py-2 rounded-lg text-sm font-medium transition-all ${treinoSelecionadoNoDia(dia.key, 'CARDIO')
-                          ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30'
-                          : 'bg-blue-500/10 text-blue-400/60 hover:bg-blue-500/20 border border-blue-500/20'
+                          ? `${classes.blueBg} ${classes.blueText} border ${classes.blueBorder}`
+                          : `${theme === 'light' ? 'bg-[#b8d4e3]/20' : 'bg-blue-500/10'} ${classes.blueText} ${theme === 'light' ? 'opacity-70' : 'opacity-60'} ${classes.blueHover} border ${classes.blueBorder}`
                           }`}
                       >
                         🏃 Cardio
@@ -1018,10 +1023,10 @@ function App() {
                           onClick={() => atualizarTreinoDia(dia.key, treinoId)}
                           disabled={bloqueado && !selecionado}
                           className={`px-3 py-2 rounded-lg text-sm font-medium transition-all ${selecionado
-                            ? 'bg-white/20 text-white border border-white/30'
+                            ? `${theme === 'light' ? 'bg-[#e5e5e5]' : 'bg-white/20'} ${classes.textPrimary} border ${classes.borderSecondary}`
                             : bloqueado
-                              ? 'bg-white/5 text-white/20 border border-white/5 cursor-not-allowed opacity-40'
-                              : 'bg-white/5 text-white/60 hover:bg-white/10 border border-white/5'
+                              ? `${theme === 'light' ? 'bg-[#f5f5f0]' : 'bg-white/5'} ${classes.textTertiary} border ${classes.borderPrimary} cursor-not-allowed opacity-40`
+                              : `${theme === 'light' ? 'bg-[#f5f5f0]' : 'bg-white/5'} ${classes.textSecondary} ${theme === 'light' ? 'hover:bg-[#e5e5e5]' : 'hover:bg-white/10'} border ${classes.borderPrimary}`
                             }`}
                           title={bloqueado && !selecionado ? 'Treino bloqueado (foi usado nos últimos 3 dias)' : ''}
                         >
@@ -1045,12 +1050,12 @@ function App() {
                             const isCardio = treinoId === 'CARDIO'
                             return (
                               <div key={idx} className="flex items-center justify-between text-xs">
-                                <span className="text-white/60">
+                                <span className={classes.textSecondary}>
                                   {isCardio ? `🏃 Cardio${treino.tipoCardio ? ` - ${treino.tipoCardio}` : ''}${treino.tempoCardio ? ` (${formatarTempo(treino.tempoCardio)})` : ''}` : treino.nome}
                                 </span>
                                 <button
                                   onClick={() => atualizarTreinoDia(dia.key, treinoId)}
-                                  className="text-red-400/60 hover:text-red-400 text-xs"
+                                  className={`${classes.redText} ${theme === 'light' ? 'opacity-70 hover:opacity-100' : 'opacity-60 hover:opacity-100'} text-xs transition-opacity`}
                                 >
                                   Remover
                                 </button>
@@ -1127,7 +1132,7 @@ function App() {
           onToggle={() => setSidebarOpen(!sidebarOpen)}
           onCreateTreino={criarNovoTreino}
         />
-        <div className="lg:ml-64 min-h-screen bg-[#0a0a0a]">
+        <div className={`lg:ml-64 min-h-screen ${classes.bgMain}`}>
           <Header
             abaAtiva={abaAtiva}
             onToggleMenu={() => setSidebarOpen(!sidebarOpen)}
@@ -1140,8 +1145,8 @@ function App() {
                   key={periodo}
                   onClick={() => setPeriodoStats(periodo)}
                   className={`flex-1 py-2 rounded-xl font-medium text-sm transition-all ${periodoStats === periodo
-                    ? 'bg-white/20 text-white'
-                    : 'bg-white/5 text-white/60 hover:bg-white/10'
+                    ? `${theme === 'light' ? 'bg-[#e5e5e5]' : 'bg-white/20'} ${classes.textPrimary}`
+                    : `${theme === 'light' ? 'bg-white' : 'bg-white/5'} ${classes.textSecondary} ${theme === 'light' ? 'hover:bg-[#f5f5f0]' : 'hover:bg-white/10'}`
                     }`}
                 >
                   {periodo === 'semana' ? 'Semana' : periodo === 'quinzena' ? 'Quinzena' : 'Mês'}
@@ -1150,62 +1155,62 @@ function App() {
             </div>
 
             <div className="space-y-4">
-              <div className="bg-[#1a1a1a] border border-white/5 rounded-2xl p-5">
-                <h3 className="text-white font-semibold mb-4">Resumo</h3>
+              <div className={`${classes.bgCard} border ${classes.borderPrimary} rounded-2xl p-5`}>
+                <h3 className={`${classes.textPrimary} font-semibold mb-4`}>Resumo</h3>
                 <div className="space-y-3">
                   <div className="flex justify-between items-center">
-                    <span className="text-white/60 text-sm">Total de treinos</span>
-                    <span className="text-white font-semibold">{stats.totalTreinos}</span>
+                    <span className={`${classes.textSecondary} text-sm`}>Total de treinos</span>
+                    <span className={`${classes.textPrimary} font-semibold`}>{stats.totalTreinos}</span>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="text-white/60 text-sm">Tempo total</span>
-                    <span className="text-white font-semibold">{formatarTempo(stats.tempoTotal)}</span>
+                    <span className={`${classes.textSecondary} text-sm`}>Tempo total</span>
+                    <span className={`${classes.textPrimary} font-semibold`}>{formatarTempo(stats.tempoTotal)}</span>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="text-white/60 text-sm">Média por dia</span>
-                    <span className="text-white font-semibold">{stats.treinosPorDia} treinos</span>
+                    <span className={`${classes.textSecondary} text-sm`}>Média por dia</span>
+                    <span className={`${classes.textPrimary} font-semibold`}>{stats.treinosPorDia} treinos</span>
                   </div>
                 </div>
               </div>
 
-              <div className="bg-[#1a1a1a] border border-white/5 rounded-2xl p-5">
-                <h3 className="text-white font-semibold mb-4">Exercícios mais realizados</h3>
+              <div className={`${classes.bgCard} border ${classes.borderPrimary} rounded-2xl p-5`}>
+                <h3 className={`${classes.textPrimary} font-semibold mb-4`}>Exercícios mais realizados</h3>
                 <div className="space-y-2">
                   {stats.exerciciosMaisFeitos.length > 0 ? (
                     stats.exerciciosMaisFeitos.map((ex, idx) => (
                       <div key={idx} className="flex justify-between items-center">
-                        <span className="text-white/80 text-sm">{ex.nome}</span>
-                        <span className="text-white/60 text-sm">{ex.count}x</span>
+                        <span className={`${theme === 'light' ? 'text-[#2d2d2d]' : 'text-white/80'} text-sm`}>{ex.nome}</span>
+                        <span className={`${classes.textSecondary} text-sm`}>{ex.count}x</span>
                       </div>
                     ))
                   ) : (
-                    <p className="text-white/40 text-sm">Nenhum dado disponível</p>
+                    <p className={`${classes.textTertiary} text-sm`}>Nenhum dado disponível</p>
                   )}
                 </div>
               </div>
 
-              <div className="bg-[#1a1a1a] border border-white/5 rounded-2xl p-5">
-                <h3 className="text-white font-semibold mb-4">Exercícios menos realizados</h3>
+              <div className={`${classes.bgCard} border ${classes.borderPrimary} rounded-2xl p-5`}>
+                <h3 className={`${classes.textPrimary} font-semibold mb-4`}>Exercícios menos realizados</h3>
                 <div className="space-y-2">
                   {stats.exerciciosMenosFeitos.length > 0 ? (
                     stats.exerciciosMenosFeitos.map((ex, idx) => (
                       <div key={idx} className="flex justify-between items-center">
-                        <span className="text-white/80 text-sm">{ex.nome}</span>
-                        <span className="text-white/60 text-sm">{ex.count}x</span>
+                        <span className={`${theme === 'light' ? 'text-[#2d2d2d]' : 'text-white/80'} text-sm`}>{ex.nome}</span>
+                        <span className={`${classes.textSecondary} text-sm`}>{ex.count}x</span>
                       </div>
                     ))
                   ) : (
-                    <p className="text-white/40 text-sm">Nenhum dado disponível</p>
+                    <p className={`${classes.textTertiary} text-sm`}>Nenhum dado disponível</p>
                   )}
                 </div>
               </div>
 
-              <div className="bg-[#1a1a1a] border border-white/5 rounded-2xl p-5">
+              <div className={`${classes.bgCard} border ${classes.borderPrimary} rounded-2xl p-5`}>
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-white font-semibold">Últimos Treinos</h3>
+                  <h3 className={`${classes.textPrimary} font-semibold`}>Últimos Treinos</h3>
                   <button
                     onClick={() => setMostrarHistoricoCompleto(true)}
-                    className="text-blue-400 text-sm hover:text-blue-300"
+                    className={`${classes.blueText} text-sm ${theme === 'light' ? 'hover:text-[#4a7a8a]' : 'hover:text-blue-300'} transition-colors`}
                   >
                     Ver todos
                   </button>
@@ -1246,10 +1251,10 @@ function App() {
               </div>
 
               {/* Configurações (menos exposto) */}
-              <div className="bg-[#1a1a1a] border border-white/5 rounded-2xl p-5">
+              <div className={`${classes.bgCard} border ${classes.borderPrimary} rounded-2xl p-5`}>
                 <button
                   onClick={() => setMostrarConfiguracoes(!mostrarConfiguracoes)}
-                  className="w-full flex items-center justify-between text-white/60 hover:text-white transition-colors"
+                  className={`w-full flex items-center justify-between ${classes.textSecondary} ${theme === 'light' ? 'hover:text-[#2d2d2d]' : 'hover:text-white'} transition-colors`}
                 >
                   <div className="flex items-center gap-2">
                     <Settings className="w-4 h-4" />
@@ -1258,10 +1263,10 @@ function App() {
                   <span className="text-xs">{mostrarConfiguracoes ? '▼' : '▶'}</span>
                 </button>
                 {mostrarConfiguracoes && (
-                  <div className="mt-4 pt-4 border-t border-white/5">
+                  <div className={`mt-4 pt-4 border-t ${classes.borderPrimary}`}>
                     <button
                       onClick={resetarHistorico}
-                      className="w-full bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 text-red-400 font-medium py-2.5 px-4 rounded-lg flex items-center justify-center gap-2 transition-all active:scale-95 text-sm"
+                      className={`w-full ${classes.redBg} ${classes.redHover} border ${classes.redBorder} ${classes.redText} font-medium py-2.5 px-4 rounded-lg flex items-center justify-center gap-2 transition-all active:scale-95 text-sm`}
                     >
                       <RotateCcw className="w-4 h-4" />
                       <span>Resetar Histórico</span>
@@ -1275,13 +1280,13 @@ function App() {
         </div>
 
         {mostrarHistoricoCompleto && (
-          <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
-            <div className="bg-[#1a1a1a] border border-white/10 rounded-2xl p-6 max-w-md w-full max-h-[90vh] flex flex-col">
+          <div className={`fixed inset-0 z-50 ${classes.bgOverlay} backdrop-blur-sm flex items-center justify-center p-4`}>
+            <div className={`${classes.bgCard} border ${classes.borderSecondary} rounded-2xl p-6 max-w-md w-full max-h-[90vh] flex flex-col`}>
               <div className="flex items-center justify-between mb-4">
-                <h2 className="text-xl font-semibold text-white">Histórico Completo</h2>
+                <h2 className={`text-xl font-semibold ${classes.textPrimary}`}>Histórico Completo</h2>
                 <button
                   onClick={() => setMostrarHistoricoCompleto(false)}
-                  className="text-white/60 hover:text-white"
+                  className={`${classes.textSecondary} ${theme === 'light' ? 'hover:text-[#2d2d2d]' : 'hover:text-white'} transition-colors`}
                   aria-label="Fechar histórico"
                 >
                   <X className="w-5 h-5" />
@@ -1295,7 +1300,7 @@ function App() {
                     : []
 
                   if (historicoOrdenado.length === 0) {
-                    return <p className="text-white/40 text-sm text-center py-8">Nenhum treino registrado</p>
+                    return <p className={`${classes.textTertiary} text-sm text-center py-8`}>Nenhum treino registrado</p>
                   }
 
                   return historicoOrdenado.map((treino, idx) => {
@@ -1309,12 +1314,12 @@ function App() {
                     })
 
                     return (
-                      <div key={idx} className="bg-[#0a0a0a] border border-white/5 rounded-xl p-4">
+                      <div key={idx} className={`${classes.bgMain} border ${classes.borderPrimary} rounded-xl p-4`}>
                         <div className="flex items-start justify-between gap-3">
                           <div className="flex-1 min-w-0">
-                            <p className="text-white font-medium text-sm truncate">{treino.nomeTreino || 'Treino'}</p>
-                            <p className="text-white/40 text-xs mt-1">{dataFormatada}</p>
-                            <p className="text-white/60 text-xs mt-1">Tempo: {formatarTempo(treino.tempoTotal || 0)}</p>
+                            <p className={`${classes.textPrimary} font-medium text-sm truncate`}>{treino.nomeTreino || 'Treino'}</p>
+                            <p className={`${classes.textTertiary} text-xs mt-1`}>{dataFormatada}</p>
+                            <p className={`${classes.textSecondary} text-xs mt-1`}>Tempo: {formatarTempo(treino.tempoTotal || 0)}</p>
                           </div>
                           <button
                             onClick={() => {
@@ -1330,7 +1335,7 @@ function App() {
                                 }
                               )
                             }}
-                            className="text-red-400/60 hover:text-red-400 p-1.5 rounded transition-colors flex-shrink-0"
+                            className={`${classes.redText} ${theme === 'light' ? 'opacity-70 hover:opacity-100' : 'opacity-60 hover:opacity-100'} p-1.5 rounded transition-colors flex-shrink-0`}
                             aria-label="Excluir treino"
                           >
                             <Trash2 className="w-4 h-4" />
@@ -1417,7 +1422,7 @@ function App() {
           onToggle={() => setSidebarOpen(!sidebarOpen)}
           onCreateTreino={criarNovoTreino}
         />
-        <div className="lg:ml-64 min-h-screen bg-[#0a0a0a]">
+        <div className={`lg:ml-64 min-h-screen ${classes.bgMain}`}>
           <Header
             abaAtiva={abaAtiva}
             onToggleMenu={() => setSidebarOpen(!sidebarOpen)}
@@ -1425,12 +1430,12 @@ function App() {
           <div className="p-4 pb-8">
           <div className="max-w-4xl mx-auto">
             {temPlanejamento && (
-              <div className="bg-[#1a1a1a] border border-white/5 rounded-2xl p-4 mb-4">
+              <div className={`${classes.bgCard} border ${classes.borderPrimary} rounded-2xl p-4 mb-4`}>
                 <div className="flex items-center justify-between mb-3">
-                  <h3 className="text-white font-medium text-sm">Semana</h3>
+                  <h3 className={`${classes.textPrimary} font-medium text-sm`}>Semana</h3>
                   <button
                     onClick={() => setAbaAtiva('planejamento')}
-                    className="text-white/40 hover:text-white/60 text-xs"
+                    className={`${classes.textTertiary} ${theme === 'light' ? 'hover:text-[#6b6b6b]' : 'hover:text-white/60'} text-xs transition-colors`}
                   >
                     Editar
                   </button>
@@ -1445,7 +1450,7 @@ function App() {
                         key={dia.key}
                         className="text-center"
                       >
-                        <p className="text-xs text-white/40 mb-1">{dia.label}</p>
+                        <p className={`text-xs ${classes.textTertiary} mb-1`}>{dia.label}</p>
                         {treinosArray.length > 0 ? (
                           <div className="space-y-0.5">
                             {treinosArray.map((treinoId, idx) => {
@@ -1455,9 +1460,9 @@ function App() {
                               return (
                                 <div
                                   key={idx}
-                                  className={`rounded-lg p-1 ${isCardio ? 'bg-blue-500/20' : 'bg-white/10'}`}
+                                  className={`rounded-lg p-1 ${isCardio ? classes.blueBg : theme === 'light' ? 'bg-[#f5f5f0]' : 'bg-white/10'}`}
                                 >
-                                  <p className={`text-[9px] font-medium truncate ${isCardio ? 'text-blue-400' : 'text-white'}`}>
+                                  <p className={`text-[9px] font-medium truncate ${isCardio ? classes.blueText : classes.textPrimary}`}>
                                     {isCardio ? '🏃' : (treino.nome.split(' ')[1] || treino.nome.substring(0, 3))}
                                   </p>
                                 </div>
@@ -1465,8 +1470,8 @@ function App() {
                             })}
                           </div>
                         ) : (
-                          <div className="bg-white/5 rounded-lg p-1.5">
-                            <p className="text-[10px] text-white/20">-</p>
+                          <div className={`${theme === 'light' ? 'bg-[#f5f5f0]' : 'bg-white/5'} rounded-lg p-1.5`}>
+                            <p className={`text-[10px] ${classes.textTertiary}`}>-</p>
                           </div>
                         )}
                       </div>
@@ -1479,7 +1484,7 @@ function App() {
             <div className="grid grid-cols-2 gap-3 mb-4">
               {treinos['CARDIO'] && (
                 <div
-                  className="bg-[#1a1a1a] border border-blue-500/20 hover:border-blue-500/30 rounded-2xl p-4 transition-all group cursor-pointer"
+                  className={`${classes.bgCard} border ${classes.blueBorder} ${classes.blueHover} rounded-2xl p-4 transition-all group cursor-pointer`}
                   onClick={() => {
                     if (treinos['CARDIO']?.tipoCardio && treinos['CARDIO']?.tempoCardio) {
                       iniciarTreino('CARDIO')
@@ -1494,15 +1499,15 @@ function App() {
                 >
                   <div className="flex items-start justify-between mb-2">
                     <div className="flex-1 min-w-0">
-                      <h2 className="text-base font-semibold text-blue-400 mb-1 truncate">
+                      <h2 className={`text-base font-semibold ${classes.blueText} mb-1 truncate`}>
                         🏃 Cardio
                       </h2>
                       {treinos['CARDIO']?.tipoCardio && treinos['CARDIO']?.tempoCardio ? (
-                        <p className="text-xs text-white/40">
+                        <p className={`text-xs ${classes.textTertiary}`}>
                           {treinos['CARDIO'].tipoCardio} • {formatarTempo(treinos['CARDIO'].tempoCardio)}
                         </p>
                       ) : (
-                        <p className="text-xs text-white/40">
+                        <p className={`text-xs ${classes.textTertiary}`}>
                           Clique para configurar
                         </p>
                       )}
@@ -1516,9 +1521,9 @@ function App() {
                           tempo: treinos['CARDIO']?.tempoCardio || 0
                         })
                       }}
-                      className="bg-white/5 hover:bg-white/10 rounded-full p-1.5 transition-colors flex-shrink-0"
+                      className={`${theme === 'light' ? 'bg-[#f5f5f0] hover:bg-[#e5e5e5]' : 'bg-white/5 hover:bg-white/10'} rounded-full p-1.5 transition-colors flex-shrink-0`}
                     >
-                      <Edit2 className="w-3.5 h-3.5 text-white/60" />
+                      <Edit2 className={`w-3.5 h-3.5 ${classes.textSecondary}`} />
                     </button>
                   </div>
                 </div>
@@ -1531,15 +1536,15 @@ function App() {
                 return (
                   <div
                     key={treinoId}
-                    className="bg-[#1a1a1a] border border-white/5 hover:border-white/10 rounded-2xl p-4 transition-all group cursor-pointer"
+                    className={`${classes.bgCard} border ${classes.borderPrimary} ${theme === 'light' ? 'hover:border-[#d0d0d0]' : 'hover:border-white/10'} rounded-2xl p-4 transition-all group cursor-pointer`}
                     onClick={() => iniciarTreino(treinoId)}
                   >
                     <div className="flex items-start justify-between mb-2">
                       <div className="flex-1 min-w-0">
-                        <h2 className="text-base font-semibold text-white mb-1 truncate">
+                        <h2 className={`text-base font-semibold ${classes.textPrimary} mb-1 truncate`}>
                           {treino.nome}
                         </h2>
-                        <p className="text-xs text-white/40">
+                        <p className={`text-xs ${classes.textTertiary}`}>
                           {totalExercicios} ex • {totalSeries} séries
                         </p>
                       </div>
@@ -1548,21 +1553,21 @@ function App() {
                           e.stopPropagation()
                           editarTreino(treinoId)
                         }}
-                        className="bg-white/5 hover:bg-white/10 rounded-full p-1.5 transition-colors flex-shrink-0"
+                        className={`${theme === 'light' ? 'bg-[#f5f5f0] hover:bg-[#e5e5e5]' : 'bg-white/5 hover:bg-white/10'} rounded-full p-1.5 transition-colors flex-shrink-0`}
                       >
-                        <Edit2 className="w-3.5 h-3.5 text-white/60" />
+                        <Edit2 className={`w-3.5 h-3.5 ${classes.textSecondary}`} />
                       </button>
                     </div>
 
                     <div className="space-y-1">
                       {treino.exercicios.slice(0, 2).map((exercicio, idx) => (
-                        <div key={idx} className="flex items-center gap-1.5 text-xs text-white/50">
-                          <div className="w-0.5 h-0.5 rounded-full bg-white/20 flex-shrink-0"></div>
+                        <div key={idx} className={`flex items-center gap-1.5 text-xs ${classes.textSecondary}`}>
+                          <div className={`w-0.5 h-0.5 rounded-full ${theme === 'light' ? 'bg-[#d0d0d0]' : 'bg-white/20'} flex-shrink-0`}></div>
                           <span className="truncate text-[10px]">{exercicio.nome}</span>
                         </div>
                       ))}
                       {treino.exercicios.length > 2 && (
-                        <div className="text-[10px] text-white/30 pt-0.5">
+                        <div className={`text-[10px] ${classes.textTertiary} pt-0.5`}>
                           +{treino.exercicios.length - 2} mais
                         </div>
                       )}
@@ -1575,7 +1580,7 @@ function App() {
             <div className="space-y-2">
               <button
                 onClick={importarDados}
-                className="w-full bg-green-500/20 hover:bg-green-500/30 border border-green-500/30 text-green-400 font-medium py-3 px-6 rounded-xl flex items-center justify-center gap-2 transition-all active:scale-95 text-sm"
+                className={`w-full ${classes.greenBg} ${classes.greenHover} border ${classes.greenBorder} ${classes.greenText} font-medium py-3 px-6 rounded-xl flex items-center justify-center gap-2 transition-all active:scale-95 text-sm`}
               >
                 <Upload className="w-4 h-4" />
                 <span>Importar Dados</span>

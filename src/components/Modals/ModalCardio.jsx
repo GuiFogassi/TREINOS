@@ -1,7 +1,11 @@
 import { useState, useEffect } from 'react'
 import { formatarTempo } from '../../utils/time'
+import { useTheme } from '../../contexts/ThemeContext'
+import { getThemeClasses } from '../../utils/theme'
 
 export const ModalCardio = ({ treinoCardio, onSalvar, onCancel, modoEdicao, onMostrarInfo, mostrar }) => {
+  const { theme } = useTheme()
+  const classes = getThemeClasses(theme)
   const [localTipo, setLocalTipo] = useState('')
   const [localTempo, setLocalTempo] = useState(0)
 
@@ -60,25 +64,25 @@ export const ModalCardio = ({ treinoCardio, onSalvar, onCancel, modoEdicao, onMo
   }
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
-      <div className="bg-[#1a1a1a] border border-white/10 rounded-2xl p-6 max-w-sm w-full">
-        <h2 className="text-xl font-semibold text-white mb-4 text-center">
+    <div className={`fixed inset-0 z-50 ${classes.bgOverlay} backdrop-blur-sm flex items-center justify-center p-4`}>
+      <div className={`${classes.bgCard} border ${classes.borderSecondary} rounded-2xl p-6 max-w-sm w-full`}>
+        <h2 className={`text-xl font-semibold ${classes.textPrimary} mb-4 text-center`}>
           {treinoCardio?.tipoCardio ? 'Editar Cardio' : 'Criar Cardio'}
         </h2>
         <div className="space-y-4">
           <div>
-            <label className="text-xs text-white/40 mb-1 block">Tipo de Cardio</label>
+            <label className={`text-xs ${classes.textTertiary} mb-1 block`}>Tipo de Cardio</label>
             <input
               type="text"
               value={localTipo}
               onChange={(e) => setLocalTipo(e.target.value)}
               placeholder="Ex: Corrida, Caminhada, Esteira, Bike..."
-              className="w-full bg-[#0a0a0a] border border-white/5 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-white/20"
+              className={`w-full ${classes.bgMain} border ${classes.borderPrimary} rounded-lg px-3 py-2 ${classes.textPrimary} text-sm focus:outline-none ${theme === 'light' ? 'focus:border-[#d0d0d0]' : 'focus:border-white/20'}`}
               autoComplete="off"
             />
           </div>
           <div>
-            <label className="text-xs text-white/40 mb-1 block">Tempo</label>
+            <label className={`text-xs ${classes.textTertiary} mb-1 block`}>Tempo</label>
             <div className="flex items-center gap-2">
               <input
                 type="number"
@@ -86,9 +90,9 @@ export const ModalCardio = ({ treinoCardio, onSalvar, onCancel, modoEdicao, onMo
                 onChange={handleHorasChange}
                 min="0"
                 placeholder="0"
-                className="flex-1 bg-[#0a0a0a] border border-white/5 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-white/20"
+                className={`flex-1 ${classes.bgMain} border ${classes.borderPrimary} rounded-lg px-3 py-2 ${classes.textPrimary} text-sm focus:outline-none ${theme === 'light' ? 'focus:border-[#d0d0d0]' : 'focus:border-white/20'}`}
               />
-              <span className="text-white/60 text-sm">h</span>
+              <span className={`${classes.textSecondary} text-sm`}>h</span>
               <input
                 type="number"
                 value={minutos}
@@ -96,24 +100,24 @@ export const ModalCardio = ({ treinoCardio, onSalvar, onCancel, modoEdicao, onMo
                 min="0"
                 max="59"
                 placeholder="0"
-                className="flex-1 bg-[#0a0a0a] border border-white/5 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-white/20"
+                className={`flex-1 ${classes.bgMain} border ${classes.borderPrimary} rounded-lg px-3 py-2 ${classes.textPrimary} text-sm focus:outline-none ${theme === 'light' ? 'focus:border-[#d0d0d0]' : 'focus:border-white/20'}`}
               />
-              <span className="text-white/60 text-sm">min</span>
+              <span className={`${classes.textSecondary} text-sm`}>min</span>
             </div>
-            <p className="text-xs text-white/30 mt-1">
+            <p className={`text-xs ${classes.textTertiary} mt-1`}>
               Tempo total: {formatarTempo(localTempo)}
             </p>
           </div>
           <div className="flex gap-2">
             <button
               onClick={handleSalvar}
-              className="flex-1 bg-blue-500/20 hover:bg-blue-500/30 text-blue-400 py-3 rounded-xl font-medium transition-all active:scale-95"
+              className={`flex-1 ${classes.blueBg} ${classes.blueHover} ${classes.blueText} py-3 rounded-xl font-medium transition-all active:scale-95`}
             >
               Salvar
             </button>
             <button
               onClick={handleCancel}
-              className="flex-1 bg-white/10 hover:bg-white/20 text-white py-3 rounded-xl font-medium transition-all active:scale-95"
+              className={`flex-1 ${classes.buttonPrimary} py-3 rounded-xl font-medium transition-all active:scale-95`}
             >
               Cancelar
             </button>

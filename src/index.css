@@ -17,8 +17,90 @@ body {
   overflow-x: hidden;
 }
 
+/* Modo Escuro (padrão) */
 #root {
   min-height: 100vh;
   background: #0a0a0a;
   color: #ffffff;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Modo Claro */
+[data-theme="light"] #root {
+  background: #faf9f6;
+  color: #2d2d2d;
+}
+
+/* Classes utilitárias para tema */
+.bg-primary {
+  @apply bg-[#0a0a0a];
+}
+
+[data-theme="light"] .bg-primary {
+  @apply bg-[#faf9f6];
+}
+
+.bg-secondary {
+  @apply bg-[#1a1a1a];
+}
+
+[data-theme="light"] .bg-secondary {
+  @apply bg-white;
+}
+
+.text-primary {
+  @apply text-white;
+}
+
+[data-theme="light"] .text-primary {
+  @apply text-[#2d2d2d];
+}
+
+.text-secondary {
+  @apply text-white/60;
+}
+
+[data-theme="light"] .text-secondary {
+  @apply text-[#6b6b6b];
+}
+
+.border-primary {
+  @apply border-white/5;
+}
+
+[data-theme="light"] .border-primary {
+  @apply border-[#e5e5e5];
+}
+
+/* Cores pastéis para modo claro */
+[data-theme="light"] .bg-blue-pastel {
+  background-color: #b8d4e3;
+}
+
+[data-theme="light"] .text-blue-pastel {
+  color: #5a8fa8;
+}
+
+[data-theme="light"] .bg-green-pastel {
+  background-color: #c4e4c4;
+}
+
+[data-theme="light"] .text-green-pastel {
+  color: #5a9a5a;
+}
+
+[data-theme="light"] .bg-orange-pastel {
+  background-color: #ffe0b3;
+}
+
+[data-theme="light"] .text-orange-pastel {
+  color: #b8864a;
+}
+
+[data-theme="light"] .bg-red-pastel {
+  background-color: #ffcccc;
+}
+
+[data-theme="light"] .text-red-pastel {
+  color: #cc6666;
 }
